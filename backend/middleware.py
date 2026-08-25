@@ -1,6 +1,5 @@
 from flask import request
-from auth.jwt import sign_validation, token_expired
-
+from core.jwt import sign_validation, token_expired
 
 PUBLIC_PATH ={
     "/login",

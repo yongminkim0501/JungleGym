@@ -1,9 +1,10 @@
 from flask import Flask
 
-from backend.api import ApplicationContainers
-from backend.api.v1.endpoints.gym import check
-from backend.api.v1.endpoints.gym.check import gym_bp
-from backend.api.v1.endpoints.user import user_bp, user
+from api.v1.containers import ApplicationContainers
+from api.v1.endpoints.gym import check
+from api.v1.endpoints.gym.check import gym_bp
+from api.v1.endpoints.user import user_bp
+from api.v1.endpoints import user
 
 
 def create_app():
