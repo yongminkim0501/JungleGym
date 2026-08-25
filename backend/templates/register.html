@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 60px auto; }
+    label { display: block; margin-top: 16px; font-size: 14px; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; margin-top: 4px; }
+    .error { color: #c00; font-size: 13px; margin-top: 4px; }
+    .flash { background: #e8f5e9; padding: 10px; margin-bottom: 20px; }
+    button { margin-top: 24px; width: 100%; padding: 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>회원가입</h1>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="flash">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST">
+    {{ form.csrf_token }}
+
+    {% for field in [form.nickname, form.name, form.email, form.password, form.password_confirm] %}
+      <label>
+        {{ field.label.text }}
+        {{ field() }}
+      </label>
+      {% for error in field.errors %}
+        <div class="error">{{ error }}</div>
+      {% endfor %}
+    {% endfor %}
+
+    <button type="submit">가입하기</button>
+  </form>
+</body>
+</html>
