@@ -33,6 +33,16 @@ def create_payload(user_id, type):
     }
     return payload
 
+def decode_payload(token):
+    if isinstance(token, str):
+        token = token.encode("utf-8")
+
+    header, payload, sign = token.split(b".")
+
+    payload = bs64toStr(payload)
+
+    return json.loads(payload.decode("utf-8"))
+
 def make_Token(user_id, type)-> bytes:
     header = {
         "alg": "HS256",
