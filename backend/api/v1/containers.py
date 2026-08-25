@@ -1,11 +1,11 @@
 from dependency_injector import containers, providers
 
-from backend.database.pymongo_client import _client
-from backend.domains.gym.repo import GymRepository
-from backend.domains.gym.service import GymService
-from backend.domains.user.service import UserService
-from backend.domains.user.repo import UserRepository
-from backend.domains.images.repo import ImageRepository
+from database.pymongo_client import _client
+from domains.gym.repo import GymRepository
+from domains.gym.service import GymService
+from domains.user.service import UserService
+from domains.user.repo import UserRepository
+from domains.images.repo import ImageRepository
 
 class ApplicationContainers(containers.DeclarativeContainer):
     config = providers.Configuration()
@@ -14,6 +14,7 @@ class ApplicationContainers(containers.DeclarativeContainer):
 
     image_repo = providers.Factory(
         ImageRepository,
+        db = db,
     )
 
     user_repo = providers.Factory(
@@ -35,5 +36,6 @@ class ApplicationContainers(containers.DeclarativeContainer):
     gym_service = providers.Factory(
         GymService,
         user_repo = user_repo,
-        gym_repo = gym_repo
+        gym_repo = gym_repo,
+        image_repo = image_repo
     )

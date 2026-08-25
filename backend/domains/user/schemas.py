@@ -3,7 +3,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms import validators
 
-
 class RegisterForm(FlaskForm):
     nickname = StringField('닉네임', [
         validators.DataRequired(message='닉네임을 입력해주세요.'),

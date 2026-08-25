@@ -22,8 +22,14 @@ def check_in(
 def check_out(
         gym_service: GymService = Provide[ApplicationContainers.gym_service]
 ):
+    raw_data = request.get_json(silent=True) # base64 데이터
     user_id = request.get_json()["user_id"]
-    gym_service.gym_out(user_id = user_id)
+
+    if not raw_data :
+        gym_service.gym_out(user_id = user_id)
+    else:
+        gym_service.gym_out_with_image(user_id=user_id, image_data = raw_data)
+
     return {
         "success":"임시 코드로 check_out 통과"
     }

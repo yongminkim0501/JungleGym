@@ -1,6 +1,6 @@
 from flask import Blueprint, request, make_response, jsonify
 from pymongo import MongoClient
-from .jwt import make_Token, sign_validation, token_expired
+from core.jwt import make_Token, sign_validation, token_expired
 
 auth_bp = Blueprint("auth", __name__)
 client = MongoClient('localhost', 27017)
