@@ -7,6 +7,9 @@ class DashboardRepository:
         self.collection_u = db.users
         self.collection_log = db.gym_logs
 
+    def find_by_id(self, id):
+        return self.collection_u.find_one({'_id'} : ObjectId(id))
+
     def find_by_email(self, email: str):
         return self.collection_u.find_one({'email': email.lower().strip()})
 
@@ -52,7 +55,7 @@ class DashboardRepository:
             'enter_room_status':True
         })
 
-    def get_gym_daily_cnt(self):
+    def get_gym_weekly_cnt(self):
         KST = timezone(timedelta(hours=9))
         now = datetime.now(KST)
         start_day = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -74,12 +77,9 @@ class DashboardRepository:
                 }
             )
 
-            weekly_cnt.append({
-                "date" : day.date().isoformat(),
-                "user_cnt" : len(user_in_day)
-            })
-        return weekly_cnt #{"date" : "2026-08-26", "user_cnt" : 11}
-
+            weekly_cnt.append(len(user_in_day))
+        return weekly_cnt
+    
     def get_user_month_log(self, _id):
         KST = timezone(timedelta(hours=9))
         now = datetime.now(KST)
@@ -110,3 +110,15 @@ class DashboardRepository:
         exercise_url = data["exercise_url"]
         title = data["title"]
         return exercise_url, title
+
+    #유저id로 로그 검색
+    def get_user_attendance_logs(self, user_id: str):
+        return list(
+            self.collection_log.find(
+                {"user_id" : user_id},
+                {"_id" : 0, "start_time": 1}
+            ).sort("start_time", -1)
+        )
+            
+
+    

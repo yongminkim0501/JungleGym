@@ -12,6 +12,7 @@ PUBLIC_PATH ={
 }
 
 def auth_middleware():
+    g.lis_login = False
     if request.path in PUBLIC_PATH:
         return
 
@@ -30,6 +31,7 @@ def auth_middleware():
 
     if not token_expired(access_payload):
         g.user_id = access_payload["user_id"]
+        g.is_login = True
         return
     
     refresh_token = request.cookies.get("refresh_token")
