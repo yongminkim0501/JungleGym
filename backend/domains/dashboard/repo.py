@@ -8,7 +8,7 @@ class DashboardRepository:
         self.collection_log = db.gym_logs
 
     def find_by_id(self, id):
-        return self.collection_u.find_one({'_id'} : ObjectId(id))
+        return self.collection_u.find_one({'_id' : ObjectId(id)})
 
     def find_by_email(self, email: str):
         return self.collection_u.find_one({'email': email.lower().strip()})
@@ -49,6 +49,11 @@ class DashboardRepository:
         )
         if result.matched_count == 0 : return False
         return True
+
+    def get_email(self, user_id:str):
+        return self.collection_u.find_one({
+            "user_id" : user_id
+        })["email"]
 
     def get_gym_current_cnt(self):
         return self.collection_u.count_documents({
@@ -119,6 +124,16 @@ class DashboardRepository:
                 {"_id" : 0, "start_time": 1}
             ).sort("start_time", -1)
         )
+
+    def get_user_img(self, user_id : str):
+        user = self.collection_u.findone(
+            {"user_id": user_id},
+            {"user_id": 0, "imagepath": 1}
+        )
+        if user is None:
+            return None
+        return user["imagepath"]
+        
             
 
     

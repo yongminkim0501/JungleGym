@@ -12,15 +12,14 @@ from core.security import verify_password, hash_password
 from domains.dashboard.service import DashboardService
 
 def build_dashboard_data(dashboard_service: DashboardService = Provide[ApplicationContainers.dashboard_service]) -> DashboardData:
-    current_cnt = dashboard_service.get_current_cnt
-    image_url =
-    profile = dashboard_service.get_profile_exercise_image_title
-    img_url = 
-    data = dashboard_service.get_dashboard_data()
-    
+    profile_data = dashboard_service.get_profile_data()
+    recent_workout = dashboard_service.get_recent_img()
+    center_status = dashboard_service.get_current_cnt()
+    attendance = dashboard_service.get_attendance()
+    weekly = dashboard_service.get_weekly_cnt()
 
 
     return {
         **build_common_data(is_login=True, user_name="정글러"), # 세션
-        data
+        
     }
