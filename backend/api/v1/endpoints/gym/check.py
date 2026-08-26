@@ -11,7 +11,7 @@ gym_bp = Blueprint('gym', __name__, url_prefix="/api/gym")
 def check_in(
         gym_service:GymService = Provide[ApplicationContainers.gym_service]
 ):
-    user_id = request.get_json()["user_id"]
+    user_id = g.user_id
     gym_service.gym_in(user_id = user_id)
     return {
         "success": "임시 코드로 check_in 통과"

@@ -1,8 +1,8 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from bson import ObjectId
 
-class MainRepository:
+class DashboardRepository:
     def __init__(self, db):
         self.collection_u = db.users
         self.collection_log = db.gym_logs
@@ -105,4 +105,8 @@ class MainRepository:
 
         return user_log
 
-            
+    def get_exercise_image(self, user_id: str):
+        data = self.collection_log.find_one({"user_id":user_id})
+        exercise_url = data["exercise_url"]
+        title = data["title"]
+        return exercise_url, title

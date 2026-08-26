@@ -9,20 +9,20 @@ class UserService:
             "nickname" : nickname,
             "name": name,
             "password": password,
-            "title" : "default 대사입니다.",
+            "image_path":str,
             "enter_room_status": False,
         }
 
         user_inserted_id : str = self.repo.create(user = user)
 
-        user_image:dict = {
+        '''user_image:dict = {
             "user_id": user_inserted_id,
             "profile_image" : None,
             "exercise_image": None
         }
 
         self.image_repo.set_image_collection(user_image_data = user_image)
-
+        '''
         return user_inserted_id
 
     def update_pw_by_email(self, email:str, password:str):

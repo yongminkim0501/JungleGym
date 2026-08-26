@@ -1,6 +1,8 @@
 from dependency_injector import containers, providers
 
 from database.pymongo_client import _client
+from domains.dashboard.repo import DashboardRepository
+from domains.dashboard.service import DashboardService
 from domains.email.repo import MailRepo
 from domains.email.service import MailService
 from domains.gym.repo import GymRepository
@@ -50,4 +52,15 @@ class ApplicationContainers(containers.DeclarativeContainer):
     mail_service = providers.Factory(
         MailService,
         repo = mail_repo
+    )
+
+    dashboard_repo = providers.Factory(
+        DashboardRepository,
+        db = db
+    )
+
+    dashboard_service = providers.Factory(
+        DashboardService,
+        repo = dashboard_repo,
+        user_repo = user_repo
     )

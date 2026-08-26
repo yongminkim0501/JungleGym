@@ -69,7 +69,7 @@ class MailRepo:
             <tr>
               <td style="padding: 16px; background-color: #05d082">
                 <img
-                  src="https://res.cloudinary.com/vcong7b4/image/upload/f_png/v1787713221/Logo.png"
+                  src="https://res.cloudinary.com/vcong7b4/image/upload/v1787713221/Logo.png?gmail=1"
                   width="248"
                   height="43"
                   alt="JUNGLE GYM"

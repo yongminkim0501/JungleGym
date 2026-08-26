@@ -9,7 +9,7 @@ from ...containers import ApplicationContainers
 from domains.user.errorhandler import EmailAlreadyExists, NicknameAlreadyExists
 from core.jwt import make_Token
 from core.security import verify_password, hash_password
-from domains.main.service import MainService
+from domains.dashboard.service import DashboardService
  
 auth_bp = Blueprint('auth', __name__, url_prefix="/api/auth")
 
@@ -43,7 +43,7 @@ def register(
     # form에 데이터 연결 해야 함
     return render_template('register.html', values = for_render_data, errors = errors)
 
-@auth_bp.route("/profile-image")
+@auth_bp.route("/profile-image", methods=["POST"])
 @inject
 def update_profile_image(
         user_service: UserService = Provide[ApplicationContainers.user_service],
@@ -105,7 +105,7 @@ def send_code(
     return mail_service.send_mail(email = email)
 
 # 인증 코드 받아서 확인
-@auth_bp.route("/verify-code")
+@auth_bp.route("/verify-code", methods=["POST"])
 @inject
 def verify_code(
     mail_service: MailService = Provide[ApplicationContainers.mail_service]
@@ -117,7 +117,17 @@ def verify_code(
     return mail_service.verify(email=email, code=code)
 
 # 비밀 번호 업데이트
-@auth_bp.route("")
+@auth_bp.route("/repassword", methods=["POST"])
+def re_password(
+        user_service: UserService = Provide[ApplicationContainers.user_service]
+):
+    data = RePasswordRequest.model_validate((request.get_json()))
+    email = data.email
+    password = data.password
+
+    hashed_password = hash_password(password = password)
+    user_service.update_pw_by_email(email=email, password=hashed_password)
+    return True
 
 # mainpage 
 @auth_bp.route("/mainpage", methods = ["GET"])
@@ -126,9 +136,9 @@ def mainpage(db = Provide[ApplicationContainers.db]):
 
     user_id = g.user_id
    
-    main_service_data = MainService(db).get_main_data(user_id)
+    main_service_data = DashboardService(db).get_main_data(user_id)
     return render_template(
-        "templates/main.html",
+        "templates/dashboard.html",
         data = main_service_data
     )
 
