@@ -7,7 +7,8 @@ from ...containers import ApplicationContainers
 from domains.user.errorhandler import EmailAlreadyExists, NicknameAlreadyExists
 from core.jwt import make_Token
 from core.security import verify_password, hash_password
-
+from domains.main.service import MainService
+ 
 auth_bp = Blueprint('auth', __name__, url_prefix="/api/auth")
 
 @auth_bp.route("/register", methods = ["POST"])
@@ -16,6 +17,7 @@ def register(
         user_service: UserService = Provide[ApplicationContainers.user_service]
 ):
     body = RegisterRequest.model_validate(request.get_json())
+    values = request.form_to_dict()
     hashed_pw = hash_password(password = body.password)
     try:
         user_service.sign_up(
@@ -33,7 +35,7 @@ def register(
     else:
         return redirect(url_for('user.login'))
     # form에 데이터 연결 해야 함
-    return render_template('register.html', form = )
+    return render_template('register.html', values= values )
 
 @auth_bp.route("/profile-image")
 @inject
@@ -49,7 +51,7 @@ def update_profile_image(
 @inject
 def login(db = Provide[ApplicationContainers.db]):
     data = LoginRequest.model_validate(request.get_json())
-    email = data.email,
+    email = data.email
     password = data.password
 
     user = db.users.find_one({'email': email})
@@ -95,3 +97,26 @@ def re_password():
 
 # 비밀 번호 업데이트
 @auth_bp.route("")
+
+# mainpage 
+@auth_bp.route("/mainpage", methods = ["GET"])
+@inject
+def mainpage(db = Provide[ApplicationContainers.db]):
+
+    user_id = g.user_id
+   
+    main_service_data = MainService(db).get_main_data(user_id)
+    return render_template(
+        "templates/main.html",
+        data = main_service_data
+    )
+
+
+
+    
+    
+
+    
+
+
+
