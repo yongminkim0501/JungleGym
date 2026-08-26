@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "mypage/components/mypage-header.html" import mypage_header %}
+
+{% block title %}내 프로필{% endblock %}
+
+{% block content %}
+{% set mypage_data = view_data.mypage %}
+<section class="flex w-full flex-1 bg-neutral-50/50 px-4 py-10">
+  <div class="mx-auto flex w-full max-w-xl flex-col gap-5">
+    {{ mypage_header("내 프로필") }}
+
+    <div class="flex flex-col items-center rounded-2xl border border-neutral-200 bg-white px-5 py-6">
+      {% if view_data.session.profile_image_url %}
+      <img
+        src="{{ view_data.session.profile_image_url }}"
+        alt="{{ view_data.session.user_name }}"
+        class="h-20 w-20 rounded-full object-cover"
+      />
+      {% else %}
+      <div
+        class="flex h-20 w-20 items-center justify-center rounded-full bg-neutral-100 text-2xl font-semibold text-neutral-500"
+      >
+        {{ view_data.session.user_name[:1] }}
+      </div>
+      {% endif %}
+
+      <strong class="mt-4 text-xl text-neutral-900">
+        {{ view_data.session.user_name }}
+      </strong>
+      <span class="mt-1 text-sm text-neutral-500">
+        {{ view_data.session.email }}
+      </span>
+
+      <div class="mt-6 grid w-full grid-cols-2 border-y border-neutral-100 py-4 text-center">
+        <div class="flex flex-col gap-1">
+          <span class="text-xl font-semibold text-[#05D082]">
+            {{ mypage_data.monthly_attendance_count }}일
+          </span>
+          <span class="text-xs text-neutral-500">이번 달 출석</span>
+        </div>
+        <div class="flex flex-col gap-1 border-l border-neutral-100">
+          <span class="text-xl font-semibold text-neutral-800">
+            {{ mypage_data.workout_count }}회
+          </span>
+          <span class="text-xs text-neutral-500">오운완 기록</span>
+        </div>
+      </div>
+
+      <div class="mt-5 flex w-full flex-col gap-2 sm:flex-row">
+        <a
+          href="/"
+          class="w-full rounded-xl bg-neutral-100 px-4 py-3 text-center font-semibold text-neutral-700 transition hover:bg-neutral-200/80"
+        >메인으로 가기</a>
+        <a
+          href="/mypage/history"
+          class="w-full rounded-xl bg-neutral-800/95 px-4 py-3 text-center font-semibold text-white transition hover:bg-neutral-800/90"
+        >입 · 퇴실 기록 보기</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

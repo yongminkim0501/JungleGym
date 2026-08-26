@@ -1,0 +1,75 @@
+{% set current_count = center_status_data.current_count %}
+{% set capacity = center_status_data.capacity %}
+{% set occupancy_percent = ((current_count / capacity) * 100) if capacity else 0 %}
+
+{% if current_count < 3 %}
+  {% set status_message = "쾌적해요" %}
+  {% set status_icon = "image/icon/star-emoji.png" %}
+  {% set status_text = "text-emerald-500" %}
+  {% set status_bar = "bg-emerald-400" %}
+{% elif current_count < 6 %}
+  {% set status_message = "보통이에요" %}
+  {% set status_icon = "image/icon/heart-emoji.png" %}
+  {% set status_text = "text-sky-500" %}
+  {% set status_bar = "bg-sky-400" %}
+{% elif current_count < 9 %}
+  {% set status_message = "조금 혼잡해요" %}
+  {% set status_icon = "image/icon/neutral-emoji.webp" %}
+  {% set status_text = "text-amber-500" %}
+  {% set status_bar = "bg-amber-400" %}
+{% elif current_count < 12 %}
+  {% set status_message = "혼잡해요" %}
+  {% set status_icon = "image/icon/angry-expression-emoji.webp" %}
+  {% set status_text = "text-orange-500" %}
+  {% set status_bar = "bg-orange-400" %}
+{% else %}
+  {% set status_message = "매우 혼잡해요" %}
+  {% set status_icon = "image/icon/anggry.webp" %}
+  {% set status_text = "text-red-500" %}
+  {% set status_bar = "bg-red-500" %}
+{% endif %}
+
+<section class="rounded-xl border border-neutral-200 bg-white px-4 py-4">
+  <div class="flex items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-2">
+      <div
+        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl sm:h-16 sm:w-16"
+        aria-hidden="true"
+      >
+        <img
+          src="{{ url_for('static', filename=status_icon) }}"
+          width="48"
+          height="48"
+          class="h-12 w-12 object-contain drop-shadow-sm sm:h-14 sm:w-14"
+          alt=""
+        />
+      </div>
+
+      <div class="min-w-0">
+        <h3 class="truncate text-lg font-semibold text-neutral-900">
+          현재 <span class="{{ status_text }}">{{ current_count }}명</span>이 운동하고 있어요.
+        </h3>
+        <p class="text-sm font-semibold {{ status_text }}">{{ status_message }}</p>
+      </div>
+    </div>
+
+    <div class="hidden shrink-0 items-end gap-1 text-neutral-900 sm:flex">
+      <strong class="text-4xl font-semibold {{ status_text }}">{{ current_count }}</strong>
+      <span class="pb-1 text-sm text-neutral-500">/ {{ capacity }}명</span>
+    </div>
+  </div>
+
+  <div
+    class="mt-4 h-2 overflow-hidden rounded-full bg-neutral-100"
+    role="progressbar"
+    aria-label="피트니스 센터 이용 인원"
+    aria-valuemin="0"
+    aria-valuemax="{{ capacity }}"
+    aria-valuenow="{{ current_count }}"
+  >
+    <div
+      class="h-full rounded-full {{ status_bar }}"
+      style="width: {{ [occupancy_percent, 100]|min }}%"
+    ></div>
+  </div>
+</section>

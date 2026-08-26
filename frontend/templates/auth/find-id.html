@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}아이디 찾기{% endblock %}
+
+{% block content %}
+<section class="flex w-full flex-1 items-center justify-center px-4 py-10">
+  <form
+    id="find-id-form"
+    class="flex w-full max-w-xs flex-col gap-2"
+  >
+    {% if form is defined %}
+      {{ form.hidden_tag() }}
+    {% endif %}
+
+    <h1 class="flex items-center gap-2 text-2xl font-semibold">
+      {% include "auth/components/find-account-heading.html" %}
+      <span class="text-neutral-900">아이디 찾기</span>
+    </h1>
+
+    <p
+      id="find-id-message"
+      class="mt-3 hidden rounded-xl px-4 py-3 text-sm"
+      role="alert"
+    ></p>
+
+    {% include "auth/components/find-id-step-1-email.html" %}
+
+    {% include "auth/components/find-id-step-2-code.html" %}
+
+    {% include "auth/components/find-id-step-3-result.html" %}
+
+    <a
+      href="/login"
+      class="text-center text-neutral-500 transition hover:text-neutral-700"
+    >로그인으로 돌아가기</a>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/find-id-controller.js') }}"></script>
+{% endblock %}

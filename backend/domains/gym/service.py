@@ -35,3 +35,7 @@ class GymService:
         )'''
         self.user_repo.gym_out_status(user_id=user_id)
         return data
+
+    def get_gym_my_record(self, user_id):
+        data_list = self.gym_repo.get_gym_log(user_id = user_id)
+        return data_list

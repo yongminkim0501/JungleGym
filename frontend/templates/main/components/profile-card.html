@@ -1,0 +1,74 @@
+<div class="flex w-full max-w-xs flex-col gap-1">
+  <a
+    href="/mypage/info"
+    class="group flex items-center gap-1 text-neutral-700 transition hover:text-neutral-800"
+  >
+    오운완 프로필
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-arrow-right group-hover:animate-arrow-right"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
+  </a>
+
+  <h1 class="flex flex-col items-start gap-2 text-2xl font-semibold">
+    <span class="text-neutral-900">내 프로필</span>
+  </h1>
+</div>
+
+<div
+  class="flex flex-col items-center rounded-xl border border-neutral-200 bg-white px-4 py-4"
+>
+  {% if view_data.session.profile_image_url %}
+  <img
+    src="{{ view_data.session.profile_image_url }}"
+    alt="{{ view_data.session.user_name }}"
+    class="h-20 w-20 rounded-full object-cover"
+  />
+  {% else %}
+  <div
+    class="flex h-20 w-20 items-center justify-center rounded-full bg-neutral-100 text-2xl font-semibold text-neutral-500"
+  >
+    {{ view_data.session.user_name[:1] }}
+  </div>
+  {% endif %}
+  <span class="mt-2 text-xl font-semibold text-neutral-900">
+    {{ view_data.session.user_name }}
+  </span>
+  <span class=" text-sm text-neutral-500">{{ view_data.session.email }}</span>
+
+  <div
+    class="mt-3 grid w-full grid-cols-2 gap-2 border-y border-neutral-100 py-4 text-center"
+  >
+    <div class="flex flex-col gap-1">
+      <span class="text-xl font-semibold text-[#05D082]">
+        {{ profile_data.monthly_attendance_count }}일
+      </span>
+      <span class="text-xs text-neutral-500">이번 달 출석</span>
+    </div>
+    <div class="flex flex-col gap-1 border-l border-neutral-100">
+      <span class="text-xl font-semibold text-neutral-800">
+        {{ profile_data.workout_count }}회
+      </span>
+      <span class="text-xs text-neutral-500">오운완 기록</span>
+    </div>
+  </div>
+
+  <a
+    href="/mypage/info"
+    class="mt-4 w-full rounded-xl bg-neutral-100 px-4 py-3 text-center text-sm font-semibold text-neutral-800 transition hover:bg-neutral-200/80 md:py-2"
+  >
+    내 프로필 보기
+  </a>
+</div>

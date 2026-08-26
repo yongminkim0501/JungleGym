@@ -1,8 +1,7 @@
-from flask import Blueprint, request, g
+from flask import Blueprint, g
 from dependency_injector.wiring import inject, Provide
 
 from domains.dashboard.service import DashboardService
-from domains.gym.service import GymService
 from ...containers import ApplicationContainers
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix="/api/dashboard")

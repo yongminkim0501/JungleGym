@@ -13,6 +13,9 @@ class DashboardRepository:
     def find_by_nickname(self, nickname: str):
         return self.collection_u.find_one({'nickname': nickname})
 
+    def find_by_id(self, id):
+        return self.collection_u.find_one({'_id': ObjectId(id)})
+
     def create(self, user: dict) -> str:
         user['created_at'] = datetime.now(timezone.utc)
         result = self.collection_u.insert_one(user)
@@ -67,7 +70,7 @@ class DashboardRepository:
 
             user_in_day = self.collection_log.distinct(
                 "user_id",{
-                    "startime":{
+                    "start_time":{
                         "$gte" : start_day_utc,
                         "$lt" : end_day_utc
                     }
@@ -94,7 +97,7 @@ class DashboardRepository:
             end_month = start_month.replace(
                 month=start_month+1
             )
-        
+
         user_log = self.collection_log.find({
             "_id" : _id,
             "starttime" : {
@@ -110,3 +113,19 @@ class DashboardRepository:
         exercise_url = data["exercise_url"]
         title = data["title"]
         return exercise_url, title
+
+    def get_user_month_log(self, user_id):
+        KST = timezone(timedelta(hours=9))
+        now = datetime.now(KST)
+        data = self.collection_log.find_one({"user_id":user_id})
+        exercise_url = data["exercise_url"]
+        title = data["title"]
+        return exercise_url, title
+
+    def get_user_attendance_logs(self, user_id: str):
+        return list(
+            self.collection_log.find(
+                {"user_id" : user_id},
+                {"_id" : 0, "start_time": 1, "title": 1, "exercise_url": 1}
+            ).sort("start_time", -1)
+        )

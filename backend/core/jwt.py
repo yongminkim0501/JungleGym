@@ -20,7 +20,7 @@ def bs64toStr(data) -> str:
 def create_payload(user_id, type):
     min = 0 #expiration time
     if type == "access":
-        min = 60
+        min = 1
     elif type =="refresh":
         min = 7*60*24
     iat = int(time.time())
@@ -43,7 +43,7 @@ def decode_payload(token):
 
     return json.loads(payload.decode("utf-8"))
 
-def make_Token(user_id, type)-> bytes:
+def make_Token(user_id, type)-> str:
     header = {
         "alg": "HS256",
         "typ": "JWT"
@@ -53,10 +53,13 @@ def make_Token(user_id, type)-> bytes:
 
     token = jsontoBs64(header) + b"." + jsontoBs64(payload) + b"." + sign
 
-    return token
+    return token.decode("utf-8")
 
 
 def sign_validation(token)-> bool:
+    if isinstance(token, str):
+        token = token.encode("utf-8")
+
     header, payload, sign = token.split(b".")
     check_sign = base64.urlsafe_b64encode(hmac.new(key, header + b"." + payload,hashlib.sha256).digest()).rstrip(b"=")
     print(check_sign, sign)

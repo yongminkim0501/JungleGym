@@ -4,7 +4,7 @@ import cloudinary.uploader
 import cloudinary
 import cloudinary.uploader
 
-API_KEY = os.getenv("CLOUDINARY_API_KEY")
+API_KEY = os.getenv("CLOUDINARY_SECRET_KEY")
 
 class ImageRepository:
     def __init__(self, db):
