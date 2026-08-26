@@ -12,6 +12,13 @@ class RegisterRequest(BaseModel):
 class RegisterResponse(BaseModel):
     pass
 
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8, description="")
+
+class LoginResponse(BaseModel):
+    pass
+
 class Purpose(str, Enum):
     FIND_ID = "find_id"
     RESET_PW = "reset_pw"
@@ -22,5 +29,3 @@ class EmailVerificationRequest(BaseModel):
 
 class EmailVerificationResponse(BaseModel):
     pass
-
-class

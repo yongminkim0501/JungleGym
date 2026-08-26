@@ -1,12 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, make_response, jsonify
+from flask import Blueprint, render_template, redirect, url_for, request, make_response, jsonify, g
 from dependency_injector.wiring import inject, Provide
 
 from domains.user.service import UserService
-#from domains.user.schemas import RegisterForm
-from core.core_schemas import RegisterRequest
+from core.core_schemas import RegisterRequest, LoginRequest
 from ...containers import ApplicationContainers
 from domains.user.errorhandler import EmailAlreadyExists, NicknameAlreadyExists
-from core.jwt import make_Token, sign_validation, token_expired
+from core.jwt import make_Token
 from core.security import verify_password, hash_password
 
 auth_bp = Blueprint('auth', __name__, url_prefix="/api/auth")
@@ -47,12 +46,13 @@ def update_profile_image(
 
 # 로그인
 @auth_bp.route("/login", methods=["POST"])
+@inject
 def login(db = Provide[ApplicationContainers.db]):
-    data = request.get_json()
-    email = data["email"]
-    password = data["password"]
+    data = LoginRequest.model_validate(request.get_json())
+    email = data.email,
+    password = data.password
 
-    user = db.user.find_one({'email': email})
+    user = db.users.find_one({'email': email})
     if user is None:
         return {"success": False}
 
@@ -65,6 +65,7 @@ def login(db = Provide[ApplicationContainers.db]):
         response = make_response(
             jsonify({"success": True})
         )
+
         response.set_cookie("access_token", jw_access_Token, httponly=True)
         response.set_cookie("refresh_token", jw_refresh_Token, httponly=True)
 

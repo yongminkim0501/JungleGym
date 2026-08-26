@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for, g
-from auth.jwt import sign_validation, token_expired, decode_payload, make_Token
+from core.jwt import sign_validation, token_expired, decode_payload, make_Token
 
 
 PUBLIC_PATH ={
