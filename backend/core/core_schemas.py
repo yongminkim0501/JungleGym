@@ -5,27 +5,30 @@ from pydantic import BaseModel, Field, EmailStr
 
 class RegisterRequest(BaseModel):
     nickname:str = Field(..., min_length= 4, max_length= 25,description= "4자 이상 25자 이하로")
-    name:str = Field(..., max_length=50, description="")
+    name:str = Field(..., max_length=50)
     email: EmailStr
-    password:str = Field(..., min_length=8, description="")
+    password:str = Field(..., min_length=8)
 
 class RegisterResponse(BaseModel):
     pass
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=8, description="")
+    password: str = Field(..., min_length=8)
 
 class LoginResponse(BaseModel):
     pass
 
-class Purpose(str, Enum):
-    FIND_ID = "find_id"
-    RESET_PW = "reset_pw"
+class EmailSendRequest(BaseModel):
+    email: EmailStr
 
 class EmailVerificationRequest(BaseModel):
     email: EmailStr
-    purpose: Purpose
+    code: int
 
 class EmailVerificationResponse(BaseModel):
     pass
+
+class RePasswordRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8)

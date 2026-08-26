@@ -10,9 +10,10 @@ class GymService:
             return self.user_repo.gym_in_status(user_id = user_id)  # 사용자가 Gym에 입실한 상태로 변경
         return False
 
-    def gym_out(self, user_id : str):
+    def gym_out(self, user_id : str, title:str):
         if self._is_gym(user_id = user_id): # if False면 gym에 현재 입장 상태가 아닙니다.
             self.gym_repo.update_gym_log_end_time(user_id = user_id)
+            self.user_repo.update_title(user_id = user_id, title = title)
             return self.user_repo.gym_out_status(user_id = user_id) # 사용자가 Gym에 퇴실한 상태로 변경
         return False
 
@@ -21,10 +22,10 @@ class GymService:
             return True
         return False
 
-    def gym_out_with_image(self, user_id : str, image_data: str):
+    def gym_out_with_image(self, user_id : str, title:str, image_data: str):
         if not self._is_gym(user_id = user_id):
             return False
-
+        self.user_repo.update_title(user_id=user_id, title=title) # 반환타입 bool
         response_dic:dict = self.image_repo.image_upload(image_path = image_data)
 
         secure_url = response_dic["secure_url"]

@@ -9,6 +9,7 @@ class UserService:
             "nickname" : nickname,
             "name": name,
             "password": password,
+            "title" : "default 대사입니다.",
             "enter_room_status": False,
         }
 
@@ -23,6 +24,10 @@ class UserService:
         self.image_repo.set_image_collection(user_image_data = user_image)
 
         return user_inserted_id
+
+    def update_pw_by_email(self, email:str, password:str):
+        self.repo.update_pw_by_email(email=email, password=password)
+        return True
 
     def update_profile_image_by_user_id(self, user_id: str, profile_image_data: str):
         recent_profile_url = self.image_repo.get_recent_image_path(user_id = user_id)
