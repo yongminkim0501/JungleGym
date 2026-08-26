@@ -12,6 +12,24 @@ class UserRepository:
     def find_by_nickname(self, nickname: str):
         return self.collection.find_one({'nickname': nickname})
 
+    def update_pw_by_email(self, email, password):
+        return self.collection.update_one({
+            "email":email
+        },{
+            "$set":{
+                "password":password
+            }
+        })
+
+    def update_title(self, user_id:str, title:str):
+        result = self.collection.update_one({
+            "_id": ObjectId(user_id)
+        },{
+            "$set":{'title':title}
+        })
+        if result.matched_count == 0 : return False
+        return True
+
     def create(self, user: dict) -> str:
         user['created_at'] = datetime.now(timezone.utc)
         result = self.collection.insert_one(user)

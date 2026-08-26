@@ -71,20 +71,6 @@ def token_expired(token):
 
 
 
-# debug #
-
-header = {
-  "alg": "HS256",
-  "typ": "JWT"
-}
-payload = create_payload("admin")
-
-#토큰 생성
-token = make_Token(header, payload)
-#토큰 검증
-print(sign_validation(token))
-
-
 
 
 

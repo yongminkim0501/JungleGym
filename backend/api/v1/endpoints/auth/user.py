@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, request, make_response, jsonify, g
 from dependency_injector.wiring import inject, Provide
 
+from domains.email.service import MailService
 from domains.user.service import UserService
-from core.core_schemas import RegisterRequest, LoginRequest
+from core.core_schemas import RegisterRequest, LoginRequest, EmailVerificationRequest, EmailSendRequest, \
+    RePasswordRequest
 from ...containers import ApplicationContainers
 from domains.user.errorhandler import EmailAlreadyExists, NicknameAlreadyExists
 from core.jwt import make_Token
@@ -16,6 +18,8 @@ auth_bp = Blueprint('auth', __name__, url_prefix="/api/auth")
 def register(
         user_service: UserService = Provide[ApplicationContainers.user_service]
 ):
+    for_render_data = request.form.to_dict()
+    errors = {}
     body = RegisterRequest.model_validate(request.get_json())
     values = request.form_to_dict()
     hashed_pw = hash_password(password = body.password)
@@ -28,14 +32,16 @@ def register(
         )
     except EmailAlreadyExists:
         #form.email.errors.append('이미 사용 중인 이메일입니다.')
+        errors["email"] = ["이미 사용중인 이메일입니다."]
         pass
     except NicknameAlreadyExists:
         #form.nickname.errors.append('이미 사용 중인 닉네임입니다.')
+        errors["nickname"] = ["이미 사용 중인 닉네임입니다."]
         pass
     else:
         return redirect(url_for('user.login'))
     # form에 데이터 연결 해야 함
-    return render_template('register.html', values= values )
+    return render_template('register.html', values = for_render_data, errors = errors)
 
 @auth_bp.route("/profile-image")
 @inject
@@ -90,10 +96,25 @@ def logout():
 
 # 이메일 기반 코드 전송
 @auth_bp.route("/send-code", methods = ["POST"])
-def re_password():
+@inject
+def send_code(
+    mail_service: MailService = Provide[ApplicationContainers.mail_service]
+):
+    data = EmailSendRequest.model_validate((request.get_json()))
+    email = data.email
+    return mail_service.send_mail(email = email)
 
 # 인증 코드 받아서 확인
 @auth_bp.route("/verify-code")
+@inject
+def verify_code(
+    mail_service: MailService = Provide[ApplicationContainers.mail_service]
+):
+    data = EmailVerificationRequest.model_validate((request.get_json()))
+    email = data.email
+    code = data.code
+
+    return mail_service.verify(email=email, code=code)
 
 # 비밀 번호 업데이트
 @auth_bp.route("")

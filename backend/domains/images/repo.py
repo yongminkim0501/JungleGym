@@ -1,5 +1,4 @@
 import os
-from idlelib.colorizer import matched_named_groups
 
 import cloudinary.uploader
 import cloudinary
