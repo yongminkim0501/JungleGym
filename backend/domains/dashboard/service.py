@@ -22,16 +22,6 @@ class DashboardService:
     def get_user_month_log(self, email):
         return self.repo.get_user_month_log(email)
 
-    def get_main_data(self, _id):
-        current_cnt = self.get_current_cnt()
-        daily_cnt = self.get_daily_cnt()
-        month_log = self.get_user_month_log(_id)
-
-        return {
-            "current_cnt" : current_cnt,
-            "daily_cnt" : daily_cnt,
-            "month_log" : month_log
-        }
 
     def get_profile_exercise_image_title(self, user_id: str):
         exercise_url, title =  self.repo.get_exercise_image_title(user_id = user_id)
@@ -96,7 +86,7 @@ class DashboardService:
         ])
 
     def get_streak_count(self, user_id: str):
-        return len(self.get_streak_days())
+        return len(self.get_streak_days(user_id))
 
     def get_profile_data(self, user_id):
         email = self.repo.get_email(user_id)
@@ -161,6 +151,16 @@ class DashboardService:
             }
         }
 
+    def get_dashboard_data(self, user_id):
+        return {
+            "profile": self.get_profile_data(user_id),
+            **self.get_recent_img(user_id),
+            "center_status": self.get_current_cnt(),
+            **self.get_attendance(user_id),
+            "weekly_visits": {
+                "counts": self.get_weekly_cnt()
+            }
+        }
 
 
     
