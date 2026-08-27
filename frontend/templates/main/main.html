@@ -7,16 +7,16 @@
 {% set attendance_data = view_data.attendance %}
 {% set weekly_visits_data = view_data.weekly_visits %}
 
-<section class="flex w-full flex-1 bg-neutral-50/50 px-4 py-6 md:px-6 md:py-8">
+<section class="flex w-full flex-1 bg-neutral-50/50 px-4 pt-6 pb-32 md:px-6 md:py-8">
   <div
     class="mx-auto grid w-full max-w-8xl gap-5 lg:grid-cols-[240px_minmax(0,1fr)]"
   >
-    <aside class="flex flex-col gap-4">
+    <aside class="contents lg:order-1 lg:flex lg:flex-col lg:gap-4">
       {% include "main/components/profile-card.html" %}
       {% include "main/components/recent-workout-card.html" %}
     </aside>
 
-    <div class="flex min-w-0 flex-col gap-5">
+    <div class="order-2 flex min-w-0 flex-col gap-5 lg:order-2">
       {% include "main/components/dashboard-header.html" %} {% include
       "main/components/center-status-card.html" %}
 

@@ -1,7 +1,7 @@
 {% set recent_image_url = (recent_workout_data.image_url or "")|trim %}
 {% if recent_image_url %}
 <div
-  class="flex h-[200px] flex-col items-start rounded-xl bg-cover bg-center px-4 py-4"
+  class="order-1 flex h-[200px] flex-col items-start rounded-xl bg-cover bg-center px-4 py-4 lg:order-none"
   style="
     background-image:
       linear-gradient(to bottom, rgba(0, 0, 0, 0.65), transparent),
