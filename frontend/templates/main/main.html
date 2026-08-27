@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}메인{% endblock %}
+{% block content %}
+{% set profile_data = view_data.profile %}
+{% set recent_workout_data = view_data.recent_workout %}
+{% set center_status_data = view_data.center_status %}
+{% set attendance_data = view_data.attendance %}
+{% set weekly_visits_data = view_data.weekly_visits %}
+
+<section class="flex w-full flex-1 bg-neutral-50/50 px-4 pt-6 pb-32 md:px-6 md:py-8">
+  <div
+    class="mx-auto grid w-full max-w-8xl gap-5 lg:grid-cols-[240px_minmax(0,1fr)]"
+  >
+    <aside class="contents lg:order-1 lg:flex lg:flex-col lg:gap-4">
+      {% include "main/components/profile-card.html" %}
+      {% include "main/components/recent-workout-card.html" %}
+    </aside>
+
+    <div class="order-2 flex min-w-0 flex-col gap-5 lg:order-2">
+      {% include "main/components/dashboard-header.html" %} {% include
+      "main/components/center-status-card.html" %}
+
+      <div
+        class="grid min-w-0 gap-5 md:grid-cols-[minmax(0,1.55fr)_minmax(250px,0.75fr)]"
+      >
+        {% include "main/components/attendance-calendar-card.html" %}
+
+        <div class="flex flex-col gap-5">
+          <div class="flex flex-col gap-5">
+            {% include "main/components/check-in-out-card.html" %} 
+            {% include "main/components/daily-congestion-card.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include "qr/components/check-in-modal.html" %} {% include
+"qr/components/check-out-modal.html" %} {% include
+"qr/components/workout-record-sheet.html" %}
+{% include "main/components/workout-photo-modal.html" %}
+{% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/controllers/qr-controller.js') }}"></script>
+<script src="{{ url_for('static', filename='js/controllers/dashboard-controller.js') }}"></script>
+{% endblock %}

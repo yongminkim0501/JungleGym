@@ -1,0 +1,7 @@
+{
+  "name": "jungle-gym-frontend",
+  "private": true,
+  "devDependencies": {
+    "tailwindcss": "^4.3.3"
+  }
+}

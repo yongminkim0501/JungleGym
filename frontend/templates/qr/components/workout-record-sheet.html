@@ -1,0 +1,119 @@
+<div
+  id="workout-record-sheet"
+  class="fixed inset-0 z-50 hidden h-[100dvh] min-h-0 w-full flex-col items-center justify-end overflow-hidden bg-neutral-800/40 md:justify-center md:p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="workout-record-title"
+  aria-hidden="true"
+  tabindex="-1"
+>
+  <form
+    id="workout-record-form"
+    class="flex max-h-[calc(100dvh-0.5rem)] w-full max-w-md flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl md:max-h-[95vh] md:rounded-2xl md:p-6"
+    novalidate
+  >
+    {% if form is defined %}
+      {{ form.hidden_tag() }}
+    {% endif %}
+
+    <div class="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-5 pb-4 pt-3 md:px-0 md:pb-4 md:pt-0">
+    <h2 id="workout-record-title" class="sr-only">오운완 기록 작성</h2>
+
+    <div class="mx-auto h-1.5 w-18 rounded-full bg-neutral-200 md:hidden"></div>
+
+    <p
+      id="workout-error"
+      role="alert"
+      class="hidden rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 -mb-2"
+    ></p>
+
+    <div class="flex flex-col gap-1 pt-2">
+      <textarea
+        id="workout-title"
+        name="title"
+        rows="1"
+        maxlength="100"
+        placeholder="오늘의 운동을 한 줄로 남겨주세요."
+        class="resize-none border-b-2 border-[#00103D]/20 bg-transparent px-0 py-3 outline-none transition focus:border-[#05D082]"
+      ></textarea>
+      <span class="text-right text-xs text-neutral-400"><span id="workout-title-count">0</span>/100</span>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <span class="text-sm font-semibold text-neutral-800">추천 태그</span>
+      <div class="flex gap-2 overflow-x-auto pb-1">
+        <button
+          id="workout-tag-complete"
+          type="button"
+          class="shrink-0 rounded-full bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100"
+        >#오운완</button>
+        <button
+          id="workout-tag-upper"
+          type="button"
+          class="shrink-0 rounded-full bg-neutral-100 px-3 py-2 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-200"
+        >#상체</button>
+        <button
+          id="workout-tag-lower"
+          type="button"
+          class="shrink-0 rounded-full bg-neutral-100 px-3 py-2 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-200"
+        >#하체</button>
+        <button
+          id="workout-tag-cardio"
+          type="button"
+          class="shrink-0 rounded-full bg-neutral-100 px-3 py-2 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-200"
+        >#유산소</button>
+        <button
+          id="workout-tag-stretch"
+          type="button"
+          class="shrink-0 rounded-full bg-neutral-100 px-3 py-2 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-200"
+        >#스트레칭</button>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <span class="text-sm font-semibold text-neutral-800">오운완 이미지</span>
+      <input id="workout-image-input" name="image" type="file" accept="image/*" capture="environment" class="hidden" />
+
+      <label
+        id="workout-image-empty"
+        for="workout-image-input"
+        class="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50 text-center transition"
+      >
+        <span class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-50 text-3xl text-neutral-800">+</span>
+        <span class="text-neutral-700 font-semibold">오운완 사진 추가</span>
+        <span class="mt-1 text-xs text-neutral-400">선택 사항 · 최대 1장</span>
+      </label>
+
+      <div id="workout-image-selected" class="relative hidden aspect-[4/3] w-full overflow-hidden rounded-2xl bg-neutral-100">
+        <img id="workout-image-preview" src="" alt="선택한 오운완 이미지 미리보기" class="h-full w-full object-cover" />
+        <button
+          id="workout-image-remove-btn"
+          type="button"
+          class="absolute right-3 top-3 rounded-full bg-neutral-900/70 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-neutral-900"
+        >사진 삭제</button>
+      </div>
+    </div>
+    </div>
+
+    <div class="flex shrink-0 flex-col gap-2 border-t border-neutral-100 bg-white px-5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 md:w-full md:border-0 md:px-0 md:pb-0 md:pt-0">
+      <button
+        id="workout-submit-btn"
+        type="submit"
+        class="w-full rounded-xl px-4 py-3 text-center font-semibold text-white transition bg-neutral-800/95 hover:bg-neutral-800/90 disabled:cursor-not-allowed disabled:opacity-60"
+      >기록하고 퇴실하기</button>
+
+      <div class="flex w-full flex-row gap-2">
+        <button
+          id="workout-cancel-btn"
+          type="button"
+          class="w-full rounded-xl bg-neutral-100 px-3 py-3 text-center  font-semibold text-neutral-700 transition hover:bg-neutral-200/80"
+        >취소</button>
+        <button
+          id="workout-skip-btn"
+          type="button"
+          class="w-full rounded-xl bg-red-50 px-3 py-3 text-center  font-semibold text-red-500 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+        >기록하지 않고 퇴실</button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,42 @@
+<section
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] md:static md:z-auto md:rounded-xl md:border md:px-4 md:py-4 md:shadow-none"
+>
+  <a
+    href="/qr"
+    class="group hidden items-center gap-1 text-sm text-neutral-700 transition hover:text-neutral-800 md:flex"
+  >
+    입 · 퇴실
+  </a>
+  <h3 class="hidden text-lg font-semibold text-neutral-900 md:block">
+    운동을 시작하거나 마쳐보세요.
+  </h3>
+
+  <div class="flex w-full items-stretch justify-center gap-2 md:mt-4">
+    <button
+      id="open-check-in-btn"
+      type="button"
+      class="flex w-full cursor-pointer flex-col items-center justify-center rounded-xl bg-neutral-100 px-4 py-3 text-center transition hover:bg-neutral-200/80 disabled:cursor-not-allowed disabled:opacity-50 md:py-8"
+      {% if view_data.session.status %}disabled aria-disabled="true" title="이미 입실 중입니다."{% endif %}
+    >
+      <span class="text-lg font-semibold text-neutral-800">
+        입실
+      </span>
+      <span class="mt-1 text-xs text-neutral-500 hidden md:inline">
+        {% if view_data.session.status %}현재 입실 중{% else %}운동 시작{% endif %}
+      </span>
+    </button>
+    <button
+      id="open-check-out-btn"
+      type="button"
+      class="flex w-full cursor-pointer flex-col items-center justify-center rounded-xl bg-red-500 px-4 py-3 text-center transition hover:bg-red-500/80 disabled:cursor-not-allowed disabled:opacity-50 md:py-8"
+      {% if not view_data.session.status %}disabled aria-disabled="true" title="현재 입실 상태가 아닙니다."{% endif %}
+    >
+      <span class="text-lg font-semibold text-white">
+        퇴실
+      </span>
+      <span class="mt-1 text-xs text-red-100 hidden md:inline">
+        {% if view_data.session.status %}오운완 기록{% else %}입실 후 이용 가능{% endif %}
+      </span>
+    </button>
+  </div>
+</section>

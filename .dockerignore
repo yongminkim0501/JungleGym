@@ -1,0 +1,16 @@
+.git
+.gitignore
+.venv
+venv
+env
+__pycache__
+*.pyc
+.idea
+.DS_Store
+.env
+.env.*
+*.pem
+node_modules
+frontend/node_modules
+backend/__pycache__
+README.md
