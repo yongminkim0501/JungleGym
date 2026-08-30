@@ -15,6 +15,12 @@
   </a>
 </p>
 
+## QR 코드
+<td width="50%" align="center">
+      <img src="./images/QR.png" width="85%"><br>
+      <b>QR 로그인</b><br>
+</td>
+
 ## 미리보기
 
 <table>
