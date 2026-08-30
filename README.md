@@ -10,7 +10,7 @@
 
 ## 발표 자료
 <p align="center">
-  <a href="./docs/junglegym-presentation.pdf">
+  <a>
     <img src="https://raw.githubusercontent.com/yongminkim0501/jungle-1/main/images/slides.gif" width="600"><br>
     <sub>발표 자료 전체 보기 (PDF · 10장)</sub>
   </a>
