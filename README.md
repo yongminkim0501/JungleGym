@@ -9,11 +9,10 @@
 - 크래프톤 정글 SW-AI랩 13기 32번 **김용민** — 백엔드
 
 ## 발표 자료
-
 <p align="center">
   <a href="./docs/junglegym-presentation.pdf">
-    <img src="./images/ppt-cover.png" width="550"><br>
-    <b>발표 자료 보기 (PDF · 10장)</b>
+    <img src="./images/slides.gif" width="600"><br>
+    <sub>발표 자료 전체 보기 (PDF · 10장)</sub>
   </a>
 </p>
 
