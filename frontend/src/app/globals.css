@@ -1,0 +1,240 @@
+@import "tailwindcss";
+
+:root {
+  --jg-brand: #05d082;
+  --jg-brand-dark: #05d082;
+  --jg-danger: #ef4444;
+  --jg-ink: #171717;
+  --jg-border-subtle: rgb(0 16 61 / 12%);
+  --jg-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --jg-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --jg-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --jg-motion-button: 120ms;
+  --jg-motion-menu: 160ms;
+  --jg-motion-dialog: 200ms;
+  --jg-motion-sheet: 240ms;
+}
+
+html {
+  min-height: 100%;
+  background: white;
+}
+
+body {
+  color: var(--jg-ink);
+  background: white;
+}
+
+button,
+a,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jg-control {
+  border-color: var(--jg-border-subtle) !important;
+}
+
+.jg-control:focus {
+  border-color: var(--jg-brand) !important;
+  box-shadow: inset 0 0 0 1px var(--jg-brand) !important;
+}
+
+.jg-pressable {
+  transition:
+    transform var(--jg-motion-button) var(--jg-ease-out),
+    opacity var(--jg-motion-button) ease,
+    background-color var(--jg-motion-button) ease,
+    border-color var(--jg-motion-button) ease,
+    color var(--jg-motion-button) ease;
+}
+
+.jg-pressable:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.jg-overlay {
+  opacity: 1;
+}
+
+.jg-dialog-content {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center;
+}
+
+.jg-dialog-content[data-exiting="true"],
+.jg-sheet-content[data-exiting="true"] {
+  pointer-events: none;
+}
+
+.jg-sheet-content {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.jg-toast {
+  transition:
+    opacity var(--jg-motion-dialog) var(--jg-ease-out),
+    transform var(--jg-motion-dialog) var(--jg-ease-out);
+}
+
+[data-sonner-toast] {
+  transition-duration: 200ms !important;
+  transition-timing-function: var(--jg-ease-out) !important;
+}
+
+[data-sonner-toast][data-removed="true"] {
+  transition-duration: 140ms !important;
+}
+
+.jg-spinner {
+  animation: jg-spin 900ms linear infinite;
+}
+
+.jg-skeleton {
+  animation: jg-pulse 1.4s ease-in-out infinite;
+}
+
+.motion-menu {
+  --jg-menu-shift: -4px;
+  --jg-menu-scale: 0.97;
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin, top);
+  transition:
+    opacity var(--jg-motion-menu) var(--jg-ease-out),
+    transform var(--jg-motion-menu) var(--jg-ease-out);
+}
+
+.motion-menu[data-state="open"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(var(--jg-menu-shift)) scale(var(--jg-menu-scale));
+  }
+}
+
+.motion-menu[data-state="closed"] {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(var(--jg-menu-shift)) scale(var(--jg-menu-scale));
+  transition-duration: 100ms;
+  /* Radix waits for CSS animations before unmounting. Keep the visual motion
+     in transitions so reopening continues from the current frame. */
+  animation: jg-menu-presence 100ms linear;
+}
+
+@keyframes jg-menu-presence {
+  from,
+  to {
+    visibility: visible;
+  }
+}
+
+@media (min-width: 768px) {
+  .jg-sheet-content {
+    transform: translate(-50%, -50%) scale(1);
+    transform-origin: center;
+  }
+}
+
+@keyframes jg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes jg-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .jg-pressable,
+  .jg-overlay,
+  .jg-dialog-content,
+  .jg-sheet-content {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+
+  .motion-menu {
+    --jg-menu-shift: 0px;
+    --jg-menu-scale: 1;
+    transition-duration: 100ms;
+  }
+
+  .motion-menu[data-state="closed"] {
+    transition-duration: 80ms;
+    animation-duration: 80ms;
+  }
+
+  .jg-dialog-content {
+    transform: translate(-50%, -50%) !important;
+  }
+
+  .jg-pressable:active:not(:disabled) {
+    transform: none;
+  }
+
+  @media (min-width: 768px) {
+    .jg-sheet-content {
+      transform: translate(-50%, -50%) !important;
+    }
+  }
+
+  .jg-spinner,
+  .jg-skeleton {
+    animation: none !important;
+  }
+
+  [data-sonner-toast] {
+    transition-duration: 1ms !important;
+  }
+}
+
+html[data-input="keyboard"] .jg-pressable,
+html[data-input="keyboard"] .jg-overlay,
+html[data-input="keyboard"] .jg-dialog-content,
+html[data-input="keyboard"] .jg-sheet-content,
+html[data-input="keyboard"] .motion-menu {
+  transition-duration: 1ms !important;
+  animation-duration: 1ms !important;
+}
+
+html[data-input="keyboard"] .jg-dialog-content {
+  transform: translate(-50%, -50%) !important;
+}
+
+html[data-input="keyboard"] .jg-pressable:active:not(:disabled) {
+  transform: none;
+}
+
+html[data-input="keyboard"] .motion-menu {
+  transition: none !important;
+  animation: none !important;
+}
+
+@media (min-width: 768px) {
+  html[data-input="keyboard"] .jg-sheet-content {
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
+html[data-input="keyboard"] .jg-spinner,
+html[data-input="keyboard"] .jg-skeleton {
+  animation: none !important;
+}
+
+html[data-input="keyboard"] [data-sonner-toast] {
+  transition-duration: 1ms !important;
+}
