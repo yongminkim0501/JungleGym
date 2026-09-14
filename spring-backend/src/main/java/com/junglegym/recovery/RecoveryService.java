@@ -24,7 +24,7 @@ public class RecoveryService {
         this.rateLimit = rateLimit;
     }
     public void sendCode(RecoveryDtos.SendCodeRequest request, String clientIp) {
-        rateLimit.check("mail-ip", clientIp, 10, Duration.ofMinutes(10));
+        rateLimit.check("mail-ip", clientIp, 10, Duration.ofMinutes(1));
         verification.sendCode(request.email(), request.purpose());
     }
 

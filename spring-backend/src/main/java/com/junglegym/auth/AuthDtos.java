@@ -2,6 +2,7 @@ package com.junglegym.auth;
 
 import jakarta.validation.constraints.*;
 import com.junglegym.user.User;
+import com.junglegym.common.validation.MaxUtf8Bytes;
 
 public final class AuthDtos {
     private AuthDtos() {}
@@ -11,7 +12,7 @@ public final class AuthDtos {
             @NotBlank @Size(max = 50) String jungleNumber,
             @Size(min = 4, max = 25) String nickname,
             @NotBlank @Size(max = 50) String name,
-            @Size(min = 8, max = 72) String password
+            @NotNull @Size(min = 8, max = 72) @MaxUtf8Bytes(72) String password
     ) {
         public RegisterRequest {
             if (jungleNumber != null) jungleNumber = jungleNumber.strip();
@@ -20,7 +21,7 @@ public final class AuthDtos {
 
     public record LoginRequest(
             @Email @NotBlank String email,
-            @NotBlank String password
+            @NotBlank @MaxUtf8Bytes(72) String password
     ) {}
 
     public record UserResponse(Long id, String email, String nickname, String name, String profileImageUrl) {
