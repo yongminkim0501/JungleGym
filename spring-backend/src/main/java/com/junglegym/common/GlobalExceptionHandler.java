@@ -2,6 +2,8 @@ package com.junglegym.common;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -11,6 +13,12 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class})
+    ResponseEntity<ApiError> handleRequestParameter(Exception exception) {
+        return ResponseEntity.badRequest()
+                .body(ApiError.of("INVALID_REQUEST", "필수 요청 파라미터와 형식을 확인해주세요."));
+    }
+
     @ExceptionHandler(BusinessException.class)
     ResponseEntity<ApiError> handleBusiness(BusinessException exception) {
         return ResponseEntity.status(exception.getStatus())

@@ -18,6 +18,11 @@ public interface GymVisitRepository extends JpaRepository<GymVisit, Long> {
     List<GymVisit> findAllByUserIdOrderByCheckedInAtDesc(Long userId);
     Page<GymVisit> findAllByUserId(Long userId, Pageable pageable);
     List<GymVisit> findAllByUserIdAndCheckedInAtBetweenOrderByCheckedInAtAsc(Long userId, Instant from, Instant to);
+    @org.springframework.data.jpa.repository.Query("select v from GymVisit v where v.user.id = :userId "
+            + "and v.checkedInAt >= :from and v.checkedInAt < :to order by v.checkedInAt asc, v.id asc")
+    List<GymVisit> findCalendarVisits(@org.springframework.data.repository.query.Param("userId") Long userId,
+                                    @org.springframework.data.repository.query.Param("from") Instant from,
+                                    @org.springframework.data.repository.query.Param("to") Instant to);
     @org.springframework.data.jpa.repository.Query("select count(distinct v.user.id) from GymVisit v where v.checkedInAt >= :from and v.checkedInAt < :to")
     long countVisitorsBetween(@org.springframework.data.repository.query.Param("from") Instant from,
                               @org.springframework.data.repository.query.Param("to") Instant to);
