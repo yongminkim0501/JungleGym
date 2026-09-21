@@ -1,0 +1,67 @@
+<div
+  id="workout-photo-modal"
+  class="fixed inset-0 z-[60] hidden min-h-screen w-screen flex-col items-center justify-center bg-neutral-900/70 p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="workout-photo-modal-title"
+  aria-hidden="true"
+  tabindex="-1"
+>
+  <div class="w-full max-w-2xl">
+    <div
+      class="relative overflow-hidden rounded-xl bg-neutral-900 shadow-2xl"
+    >
+      <img
+        id="workout-photo-modal-image"
+        src=""
+        alt="오운완 사진"
+        class="max-h-[75vh] min-h-60 w-full object-contain"
+      />
+
+      <div
+        id="workout-photo-modal-error"
+        class="hidden min-h-60 w-full items-center justify-center bg-neutral-800 px-6 text-center text-sm text-neutral-300"
+        role="alert"
+      >
+        이미지를 불러오지 못했습니다.
+      </div>
+
+      <div
+        class="pointer-events-none absolute inset-x-0 top-0 flex flex-col items-start bg-gradient-to-b from-black/75 to-transparent px-4 pb-12 pt-4"
+      >
+        <span
+          id="workout-photo-modal-title"
+          class="flex items-center gap-1 text-sm text-neutral-100"
+        ></span>
+
+        <h2
+          id="workout-photo-modal-memo"
+          class="mt-1 hidden max-w-[calc(100%_-_3rem)] text-lg font-semibold text-white"
+        ></h2>
+      </div>
+
+      <button
+        id="workout-photo-close-btn"
+        type="button"
+        class="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-neutral-700 transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#05D082] focus:ring-offset-2 focus:ring-offset-neutral-900"
+        aria-label="사진 닫기"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

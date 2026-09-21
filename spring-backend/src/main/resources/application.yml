@@ -1,0 +1,58 @@
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${COOKIE_SECURE:false}
+
+spring:
+  application:
+    name: jungle-gym-api
+  datasource:
+    url: jdbc:h2:mem:junglegym;MODE=MariaDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      repositories:
+        enabled: false
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
+
+app:
+  jwt-secret: ${JWT_SECRET:local-jwt-secret-change-this-to-at-least-32-bytes}
+  cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:bhrv5jri}
+    api-key: ${CLOUDINARY_API_KEY:313521525263326}
+    api-secret: ${CLOUDINARY_SECRET_KEY:}
+  frontend-origin: ${FRONTEND_ORIGIN:http://localhost:3000}
+  mail-from: ${MAIL_FROM:no-reply@jungle-gym.local}
+  verification-hmac-secret: ${VERIFICATION_HMAC_SECRET:local-development-secret-change-me}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true

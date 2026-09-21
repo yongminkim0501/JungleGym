@@ -1,0 +1,49 @@
+{% set visit_counts = weekly_visits_data.counts %}
+{% set weekday_labels = ["월", "화", "수", "목", "금", "토", "일"] %}
+{% set busiest = namespace(index=0) %}
+{% for count in visit_counts %}
+  {% if count > visit_counts[busiest.index] %}
+    {% set busiest.index = loop.index0 %}
+  {% endif %}
+{% endfor %}
+{% set max_visits = visit_counts[busiest.index] %}
+{% set chart_max = max_visits if max_visits > 0 else 1 %}
+
+<section
+  class="flex flex-1 flex-col rounded-xl border border-neutral-200 bg-white px-4 py-4"
+>
+  <a
+    href="/"
+    class="group flex items-center gap-1 text-neutral-700 transition hover:text-neutral-800 text-sm"
+  >
+    요일별 방문 횟수
+  </a>
+  <h3 class="text-lg font-semibold text-neutral-900">
+    최근 방문 기록을 요일별로 비교해보세요.
+  </h3>
+
+  <div class="mt-5 grid grid-cols-7 gap-1.5">
+    {% for count in visit_counts %}
+    {% set is_busiest = loop.index0 == busiest.index %}
+    <div class="flex min-w-0 flex-col items-center gap-2">
+      <span
+        class="text-[11px] font-medium {% if is_busiest %}text-[#05D082]{% else %}text-neutral-400{% endif %}"
+      >
+        {{ count }}
+      </span>
+      <div
+        class="flex h-24 w-full items-end justify-center rounded-lg bg-neutral-50 px-1.5 py-1.5"
+      >
+        <span
+          class="block w-full max-w-5 rounded-md {% if is_busiest %}bg-[#05D082]{% else %}bg-neutral-200{% endif %}"
+          style="height: {{ ((count / chart_max) * 100)|round|int }}%"
+        ></span>
+      </div>
+      <span
+        class="flex h-7 w-7 items-center justify-center rounded-full text-xs {% if is_busiest %}bg-[#05D082] font-semibold text-white{% else %}text-neutral-500{% endif %}"
+        >{{ weekday_labels[loop.index0] }}</span
+      >
+    </div>
+    {% endfor %}
+  </div>
+</section>
