@@ -1,0 +1,157 @@
+{% extends "base.html" %} {% block title %}회원가입 페이지{% endblock %} {%
+block content %}
+<section class="flex w-full flex-1 items-center justify-center px-4 py-10">
+  <form
+    id="register-form"
+    class="flex w-full max-w-xs flex-col gap-2"
+    novalidate
+  >
+    {% if form is defined %} {{ form.hidden_tag() }} {% endif %}
+
+    <h1 class="flex items-center gap-2 text-2xl font-semibold">
+      <svg
+        width="158"
+        height="33"
+        viewBox="0 0 248 43"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g clip-path="url(#clip0_47_19)">
+          <path
+            d="M38.7427 21.4911C38.7427 11.9241 31.2155 4.1682 21.9306 4.1682C12.6457 4.1682 5.11856 11.9241 5.11856 21.4911C5.11856 31.0581 12.6457 38.814 21.9306 38.814C31.2155 38.814 38.7427 31.0581 38.7427 21.4911ZM43.8612 21.4911L39.6731 34.773L28.7075 42.9822H15.1542L4.18862 34.773L0 21.4911L4.18862 8.20879L15.1542 0H28.7075L39.6731 8.20879L43.8612 21.4911ZM23.5849 22.7306L20.2763 20.2521L18.2306 26.739L23.5849 22.7306ZM25.9078 24.4698L13.0395 34.1027L13.0377 34.1013L17.9534 18.5129L30.8223 8.8795L30.8236 8.88043L25.9078 24.4698Z"
+            fill="#05D082"
+          />
+        </g>
+        <path
+          d="M64.2734 7.21875H69.3125V27.1016C69.3125 32.5703 65.6406 35.8906 60.2109 35.8906C55.25 35.8906 51.4609 33.1953 51.4609 28H56.5391C56.5391 30.3047 58.1016 31.7109 60.4062 31.7109C62.8672 31.7109 64.2344 30.1094 64.2734 27.1016V7.21875ZM92.3984 7.21875H97.5156V25.6953C97.5156 31.75 92.9062 35.9297 86.0312 35.9297C79.1172 35.9297 74.5469 31.75 74.5469 25.6953V7.21875H79.625V25.2656C79.625 28.8203 82.125 31.3984 86.0312 31.3984C89.9375 31.3984 92.3984 28.8203 92.3984 25.2656V7.21875ZM125.992 7.21875V35.5H121.461L108.062 16.1641H107.828V35.5H102.75V7.21875H107.359L120.68 26.5547H120.953V7.21875H125.992ZM150.172 16.2422C149.273 13.2344 146.93 11.3984 143.492 11.3984C138.922 11.3984 135.641 14.9531 135.641 21.3203C135.641 27.7656 138.883 31.3203 143.609 31.3203C147.867 31.3203 150.602 28.7422 150.68 24.7188H144.117V20.6953H155.602V24.0938C155.602 31.3594 150.602 35.8906 143.609 35.8906C135.797 35.8906 130.523 30.3438 130.523 21.3594C130.523 12.2969 136.031 6.82812 143.453 6.82812C149.703 6.82812 154.508 10.6953 155.367 16.2422H150.172ZM160.211 35.5V7.21875H165.289V31.2031H177.789V35.5H160.211ZM181.852 35.5V7.21875H200.25V11.4766H186.93V19.2109H199.273V23.4688H186.93V31.2031H200.328V35.5H181.852Z"
+          fill="#05D082"
+        />
+        <path
+          d="M215.984 10.7969C215.625 9.59375 214.688 8.85938 213.312 8.85938C211.484 8.85938 210.172 10.2812 210.172 12.8281C210.172 15.4062 211.469 16.8281 213.359 16.8281C215.062 16.8281 216.156 15.7969 216.188 14.1875H213.562V12.5781H218.156V13.9375C218.156 16.8438 216.156 18.6562 213.359 18.6562C210.234 18.6562 208.125 16.4375 208.125 12.8438C208.125 9.21875 210.328 7.03125 213.297 7.03125C215.797 7.03125 217.719 8.57812 218.062 10.7969H215.984ZM218.797 7.1875H221.094L223.875 12.1875H223.984L226.766 7.1875H229.062L224.953 14.2656V18.5H222.922V14.2656L218.797 7.1875ZM230.375 7.1875H232.875L236.234 15.4062H236.375L239.734 7.1875H242.234V18.5H240.281V10.7188H240.172L237.031 18.4688H235.578L232.438 10.6875H232.344V18.5H230.375V7.1875ZM245.469 18.625C244.797 18.625 244.25 18.0781 244.25 17.4062C244.25 16.75 244.797 16.2031 245.469 16.2031C246.109 16.2031 246.672 16.75 246.672 17.4062C246.672 18.0781 246.109 18.625 245.469 18.625Z"
+          fill="#05D082"
+        />
+        <defs>
+          <clipPath id="clip0_47_19">
+            <rect width="44" height="43" fill="#05D082" />
+          </clipPath>
+        </defs>
+      </svg>
+      <span class="text-neutral-900">회원가입</span>
+    </h1>
+
+    <p
+      id="err-msg"
+      role="alert"
+      class="mt-3 hidden rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600"
+    ></p>
+
+    <div class="flex w-full flex-col gap-5 py-4">
+      <div class="flex w-full flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="register-email" class="text-base text-neutral-900"
+            >이메일</label
+          >
+          <input
+            id="register-email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="이메일을 입력해주세요."
+            class="w-full rounded-xl border border-[#00103D]/12 px-4 py-3 outline-none transition focus:border-[#05D082] focus:ring-1 focus:ring-inset focus:ring-[#05D082] md:px-3 md:py-2"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="register-nickname" class="text-base text-neutral-900"
+            >닉네임</label
+          >
+          <input
+            id="register-nickname"
+            name="nickname"
+            type="text"
+            required
+            minlength="4"
+            maxlength="25"
+            autocomplete="nickname"
+            placeholder="@Nickname를 입력해주세요."
+            class="w-full rounded-xl border border-[#00103D]/12 px-4 py-3 outline-none transition focus:border-[#05D082] focus:ring-1 focus:ring-inset focus:ring-[#05D082] md:px-3 md:py-2"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="register-name" class="text-base text-neutral-900"
+            >이름</label
+          >
+          <input
+            id="register-name"
+            name="name"
+            type="text"
+            required
+            maxlength="50"
+            autocomplete="name"
+            placeholder="이름을 입력해주세요."
+            class="w-full rounded-xl border border-[#00103D]/12 px-4 py-3 outline-none transition focus:border-[#05D082] focus:ring-1 focus:ring-inset focus:ring-[#05D082] md:px-3 md:py-2"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="register-password" class="text-base text-neutral-900"
+            >비밀번호</label
+          >
+          <input
+            id="register-password"
+            name="password"
+            type="password"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            placeholder="비밀번호를 입력해주세요."
+            class="w-full rounded-xl border border-[#00103D]/12 px-4 py-3 outline-none transition focus:border-[#05D082] focus:ring-1 focus:ring-inset focus:ring-[#05D082] md:px-3 md:py-2"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label
+            for="register-password-confirm"
+            class="text-base text-neutral-900"
+            >비밀번호 확인</label
+          >
+          <input
+            id="register-password-confirm"
+            name="password_confirm"
+            type="password"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            placeholder="비밀번호를 입력해주세요."
+            class="w-full rounded-xl border border-[#00103D]/12 px-4 py-3 outline-none transition focus:border-[#05D082] focus:ring-1 focus:ring-inset focus:ring-[#05D082] md:px-3 md:py-2"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row w-full items-center justify-center gap-2 font-semibold pt-4">
+        <a
+          href="/login"
+          class="w-full rounded-xl bg-neutral-100 px-6 py-3 text-center text-lg text-neutral-800 transition hover:bg-neutral-200/80 md:py-2"
+          >돌아가기</a
+        >
+        <button
+          id="register-submit-button"
+          type="submit"
+          class="w-full rounded-xl bg-neutral-800/95 px-6 py-3 text-center text-lg text-white transition hover:bg-neutral-800/90 disabled:cursor-not-allowed disabled:opacity-50 md:py-2 font-semibold"
+        >
+          회원가입
+        </button>
+      </div>
+
+      <div class="flex items-center text-neutral-500 text-base">
+        <a href="/find-password" class="transition hover:text-neutral-700">비밀번호 찾기</a>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/form-validator.js') }}"></script>
+<script src="{{ url_for('static', filename='js/controllers/auth-controller.js') }}"></script>
+{% endblock %}

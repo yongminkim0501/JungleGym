@@ -1,0 +1,47 @@
+# ── Python ──────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 패키징 / 빌드
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# 가상환경
+venv/
+.venv/
+env/
+ENV/
+
+# 테스트 / 커버리지
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+
+# ── 환경변수 / 시크릿 ────────────────────────
+.env
+.env.*
+!.env.example
+*.env
+key.env
+*.pem
+*.key
+credentials.json
+secrets.yaml
+
+# ── Flask ───────────────────────────────────
+instance/
+.webassets-cache
+flask_session/
+
+# ── DB / 마이그레이션 산출물 ─────────────────
+*.db
