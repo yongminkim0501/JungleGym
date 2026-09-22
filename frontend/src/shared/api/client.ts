@@ -2,6 +2,9 @@ import { z } from "zod";
 
 import { ApiError } from "./errors";
 import {
+  attendanceCalendarSchema,
+  attendanceDaysSchema,
+  calendarRequestSchema,
   checkOutPayloadSchema,
   csrfSchema,
   dashboardSchema,
@@ -19,6 +22,9 @@ import {
   wireSuccessSchema,
 } from "./schemas";
 import type {
+  AttendanceCalendarDto,
+  AttendanceDaysDto,
+  CalendarRequest,
   CheckOutPayload,
   DashboardDto,
   HistoryDto,
@@ -146,11 +152,38 @@ async function parseSuccess<T>(
   return parsed.data.data;
 }
 
-async function requestGet<T>(
-  path: string,
+async function parseRawSuccess<T>(
+  response: Response,
   dataSchema: z.ZodType<T>,
+): Promise<T> {
+  if (!response.ok) {
+    throw await readError(response);
+  }
+
+  const raw = await response.json().catch((cause) => {
+    throw new ApiError({
+      status: response.status,
+      message: "응답을 JSON으로 해석할 수 없습니다.",
+      cause,
+    });
+  });
+
+  const parsed = dataSchema.safeParse(raw);
+  if (!parsed.success) {
+    throw new ApiError({
+      status: response.status,
+      message: "API 응답 형식이 올바르지 않습니다.",
+      cause: parsed.error,
+    });
+  }
+
+  return parsed.data;
+}
+
+async function fetchGet(
+  path: string,
   options: RequestOptions = {},
-) {
+): Promise<Response> {
   const init: RequestInit = {
     method: "GET",
     credentials: "include",
@@ -179,7 +212,23 @@ async function requestGet<T>(
     });
   }
 
-  return parseSuccess(response, dataSchema);
+  return response;
+}
+
+async function requestGet<T>(
+  path: string,
+  dataSchema: z.ZodType<T>,
+  options: RequestOptions = {},
+) {
+  return parseSuccess(await fetchGet(path, options), dataSchema);
+}
+
+async function requestRawGet<T>(
+  path: string,
+  dataSchema: z.ZodType<T>,
+  options: RequestOptions = {},
+) {
+  return parseRawSuccess(await fetchGet(path, options), dataSchema);
 }
 
 async function getCsrf(options: RequestOptions = {}) {
@@ -260,6 +309,16 @@ function visitsUrl(page: number, size: number) {
   });
 
   return `/api/gym/visits?${params.toString()}`;
+}
+
+function calendarUrl(path: string, request: CalendarRequest) {
+  const { year, month } = calendarRequestSchema.parse(request);
+  const params = new URLSearchParams({
+    year: String(year),
+    month: String(month),
+  });
+
+  return `${path}?${params.toString()}`;
 }
 
 export const api = {
@@ -353,5 +412,27 @@ export const api = {
 
   dashboard(options?: RequestOptions): Promise<DashboardDto> {
     return requestGet("/api/dashboard", dashboardSchema, options);
+  },
+
+  attendanceCalendar(
+    request: CalendarRequest,
+    options?: RequestOptions,
+  ): Promise<AttendanceCalendarDto> {
+    return requestRawGet(
+      calendarUrl("/api/dashboard/calendar", request),
+      attendanceCalendarSchema,
+      options,
+    );
+  },
+
+  attendanceDays(
+    request: CalendarRequest,
+    options?: RequestOptions,
+  ): Promise<AttendanceDaysDto> {
+    return requestRawGet(
+      calendarUrl("/api/dashboard/calendar/attendance", request),
+      attendanceDaysSchema,
+      options,
+    );
   },
 };

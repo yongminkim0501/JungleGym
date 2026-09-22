@@ -6,9 +6,10 @@ import { MypageHeader } from "./mypage-header";
 
 type MyInfoViewProps = {
   dashboard: Dashboard;
+  monthlyAttendance: number;
 };
 
-export function MyInfoView({ dashboard }: MyInfoViewProps) {
+export function MyInfoView({ dashboard, monthlyAttendance }: MyInfoViewProps) {
   return (
     <section className="flex w-full flex-1 bg-neutral-50/50 px-4 py-10">
       <div className="mx-auto flex w-full max-w-xl flex-col gap-5">
@@ -27,7 +28,7 @@ export function MyInfoView({ dashboard }: MyInfoViewProps) {
           <div className="mt-6 grid w-full grid-cols-2 border-y border-neutral-100 py-4 text-center">
             <div className="flex flex-col gap-1">
               <span className="text-xl font-semibold text-[#05D082]">
-                {dashboard.monthlyAttendance}일
+                {monthlyAttendance}일
               </span>
               <span className="text-xs text-neutral-500">이번 달 출석</span>
             </div>

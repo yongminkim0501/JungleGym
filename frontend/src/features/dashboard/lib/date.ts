@@ -65,15 +65,17 @@ export function formatKstMonthDay(value: string): string {
   }).format(new Date(value));
 }
 
-export function currentMonthSundayCalendar(now: Date = new Date()): {
-  year: number;
-  month: number;
+export function monthSundayCalendar(year: number, month: number): {
   cells: CalendarCell[];
 } {
-  const { year, month } = kstDateParts(now);
   const monthIndex = month - 1;
-  const firstDay = new Date(Date.UTC(year, monthIndex, 1));
-  const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+  const firstDay = new Date(0);
+  firstDay.setUTCHours(0, 0, 0, 0);
+  firstDay.setUTCFullYear(year, monthIndex, 1);
+  const lastDay = new Date(0);
+  lastDay.setUTCHours(0, 0, 0, 0);
+  lastDay.setUTCFullYear(year, monthIndex + 1, 0);
+  const daysInMonth = lastDay.getUTCDate();
   const cells: CalendarCell[] = [];
 
   for (let i = 0; i < firstDay.getUTCDay(); i += 1) {
@@ -84,5 +86,5 @@ export function currentMonthSundayCalendar(now: Date = new Date()): {
     cells.push({ day, key: `${year}-${month}-${day}` });
   }
 
-  return { year, month, cells };
+  return { cells };
 }

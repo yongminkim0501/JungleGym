@@ -1,5 +1,5 @@
 export {
-  currentMonthSundayCalendar,
+  monthSundayCalendar,
   formatKstDate,
   formatKstMonthDay,
   formatKstTime,

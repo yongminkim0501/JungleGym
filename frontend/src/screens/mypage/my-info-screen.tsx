@@ -1,12 +1,23 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQueries } from "@tanstack/react-query";
 
-import { dashboardQueryOptions } from "@/entities/dashboard";
+import {
+  attendanceCalendarQueryOptions,
+  dashboardQueryOptions,
+} from "@/entities";
 import { MyInfoView } from "@/features/mypage";
 
 export function MyInfoScreen() {
-  const { data: dashboard } = useSuspenseQuery(dashboardQueryOptions());
+  const [{ data: dashboard }, { data: attendanceCalendar }] =
+    useSuspenseQueries({
+      queries: [dashboardQueryOptions(), attendanceCalendarQueryOptions()],
+    });
 
-  return <MyInfoView dashboard={dashboard} />;
+  return (
+    <MyInfoView
+      dashboard={dashboard}
+      monthlyAttendance={attendanceCalendar.monthlyAttendance}
+    />
+  );
 }

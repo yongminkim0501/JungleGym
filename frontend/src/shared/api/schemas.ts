@@ -82,6 +82,34 @@ export const dashboardSchema = z.object({
   workoutEvents: z.record(z.string(), workoutSchema),
 });
 
+export const calendarRequestSchema = z
+  .object({
+    year: z.number().int().min(1).max(9999),
+    month: z.number().int().min(1).max(12),
+  })
+  .strict();
+
+export const attendanceCalendarDaySchema = z
+  .object({
+    date: z.number().int().min(1).max(31),
+    ischeck: z.boolean(),
+    title: z.string(),
+    img_url: z.string(),
+  })
+  .strict();
+
+export const attendanceCalendarSchema = z.array(attendanceCalendarDaySchema);
+
+export const attendanceDaySchema = z
+  .object({
+    date: z.number().int().min(1).max(31),
+    title: z.string(),
+    img_url: z.string(),
+  })
+  .strict();
+
+export const attendanceDaysSchema = z.array(attendanceDaySchema);
+
 export const registerPayloadSchema = z.object({
   email: z.string().email(),
   jungleNumber: z.string().trim().min(1).max(50),

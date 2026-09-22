@@ -55,6 +55,7 @@ export function useGymWorkflow() {
 
   async function invalidateGymState() {
     await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.attendanceCalendar }),
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard }),
       queryClient.invalidateQueries({ queryKey: queryKeys.visits }),
     ]);

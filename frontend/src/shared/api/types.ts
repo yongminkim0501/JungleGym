@@ -1,6 +1,11 @@
 import type { z } from "zod";
 
 import type {
+  attendanceCalendarDaySchema,
+  attendanceCalendarSchema,
+  attendanceDaySchema,
+  attendanceDaysSchema,
+  calendarRequestSchema,
   checkOutPayloadSchema,
   dashboardSchema,
   historySchema,
@@ -30,6 +35,13 @@ export type VisitDto = z.infer<typeof visitSchema>;
 export type HistoryDto = z.infer<typeof historySchema>;
 export type WorkoutDto = z.infer<typeof workoutSchema>;
 export type DashboardDto = z.infer<typeof dashboardSchema>;
+export type CalendarRequest = z.infer<typeof calendarRequestSchema>;
+export type AttendanceCalendarDayDto = z.infer<
+  typeof attendanceCalendarDaySchema
+>;
+export type AttendanceCalendarDto = z.infer<typeof attendanceCalendarSchema>;
+export type AttendanceDayDto = z.infer<typeof attendanceDaySchema>;
+export type AttendanceDaysDto = z.infer<typeof attendanceDaysSchema>;
 export type VisitHistory = z.infer<typeof visitHistorySchema>;
 
 export type RecoveryPurpose = z.infer<typeof recoveryPurposeSchema>;

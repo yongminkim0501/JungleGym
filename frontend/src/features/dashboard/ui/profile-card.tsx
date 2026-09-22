@@ -7,9 +7,10 @@ import { ArrowRightIcon } from "./icons";
 
 type ProfileCardProps = {
   dashboard: Dashboard;
+  monthlyAttendance: number;
 };
 
-export function ProfileCard({ dashboard }: ProfileCardProps) {
+export function ProfileCard({ dashboard, monthlyAttendance }: ProfileCardProps) {
   return (
     <>
       <div className="order-3 flex w-full max-w-xs flex-col gap-1 lg:order-none">
@@ -40,7 +41,7 @@ export function ProfileCard({ dashboard }: ProfileCardProps) {
         <div className="mt-3 grid w-full grid-cols-2 gap-2 border-y border-neutral-100 py-4 text-center">
           <div className="flex flex-col gap-1">
             <span className="text-xl font-semibold text-[#05D082]">
-              {dashboard.monthlyAttendance}일
+              {monthlyAttendance}일
             </span>
             <span className="text-xs text-neutral-500">이번 달 출석</span>
           </div>

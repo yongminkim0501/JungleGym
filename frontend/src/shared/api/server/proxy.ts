@@ -41,6 +41,8 @@ const allowedRoutes = [
   { method: "POST", path: "/api/gym/check-out" },
   { method: "GET", path: "/api/gym/visits" },
   { method: "GET", path: "/api/dashboard" },
+  { method: "GET", path: "/api/dashboard/calendar" },
+  { method: "GET", path: "/api/dashboard/calendar/attendance" },
 ] as const;
 
 type RouteParams = {

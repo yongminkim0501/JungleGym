@@ -1,13 +1,13 @@
 "use client";
 
-import type { Dashboard, Workout } from "@/shared/api";
-import { optimizedBackgroundImage } from "@/shared/lib";
-import { currentMonthSundayCalendar, formatKstMonthDay } from "../lib";
+import type { AttendanceCalendar } from "@/entities";
+import { formatMonthDay, optimizedBackgroundImage } from "@/shared/lib";
+import { monthSundayCalendar } from "../lib";
 import { CheckIcon, ImageIcon, NoteIcon } from "./icons";
 import type { PhotoDialogState } from "./photo-dialog";
 
 type AttendanceCalendarCardProps = {
-  dashboard: Dashboard;
+  calendar: AttendanceCalendar;
   onPhotoSelect: (photo: NonNullable<PhotoDialogState>) => void;
 };
 
@@ -20,52 +20,16 @@ const STREAK_BACKGROUND = optimizedBackgroundImage({
   height: 232,
 });
 
-function eventForDay(events: Record<string, Workout>, day: number): Workout | undefined {
-  return events[String(day)];
-}
-
-function visualStreakDays(attendanceDays: number[], streakDays: number): Set<number> {
-  if (streakDays <= 0) {
-    return new Set();
-  }
-
-  const attendedDays = new Set(attendanceDays);
-  const today = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Seoul",
-    day: "numeric",
-  }).format(new Date());
-  const todayDay = Number(today);
-  const endDay = attendedDays.has(todayDay)
-    ? todayDay
-    : attendedDays.has(todayDay - 1)
-      ? todayDay - 1
-      : null;
-
-  if (endDay === null) {
-    return new Set();
-  }
-
-  const visualDays = new Set<number>();
-  for (let day = endDay; day > 0 && visualDays.size < streakDays; day -= 1) {
-    if (!attendedDays.has(day)) {
-      break;
-    }
-    visualDays.add(day);
-  }
-
-  return visualDays;
-}
-
-export function AttendanceCalendarCard({ dashboard, onPhotoSelect }: AttendanceCalendarCardProps) {
-  const { month, cells } = currentMonthSundayCalendar();
-  const attendedDays = new Set(dashboard.attendanceDays);
-  const streakVisualDays = visualStreakDays(dashboard.attendanceDays, dashboard.streakDays);
+export function AttendanceCalendarCard({ calendar, onPhotoSelect }: AttendanceCalendarCardProps) {
+  const { cells } = monthSundayCalendar(calendar.year, calendar.month);
+  const days = new Map(calendar.days.map((day) => [day.day, day]));
+  const streakVisualDays = new Set(calendar.streakDayNumbers);
 
   return (
     <section className="rounded-xl border border-neutral-200 bg-white px-3 py-4 sm:px-4">
       <div className="flex flex-col gap-1">
         <div>
-          {dashboard.streakDays > 0 ? (
+          {calendar.recentStreakDays > 0 ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#7CC1EB]/25 via-[#9DA7E7]/25 to-[#BEA0EB]/25 px-1.5 py-1 text-xs">
               <img
                 src="/image/icon/star.webp"
@@ -76,12 +40,17 @@ export function AttendanceCalendarCard({ dashboard, onPhotoSelect }: AttendanceC
               />
 
               <span className="bg-gradient-to-r from-blue-500/70 to-fuchsia-400/80 bg-clip-text pr-1 text-sm font-semibold text-transparent md:text-xs">
-                {dashboard.streakDays}일째 연속 오운완
+                {calendar.recentStreakDays}일째 연속 오운완
               </span>
             </span>
           ) : null}
         </div>
-        <h3 className="text-lg font-semibold text-neutral-900 sm:text-xl">출석 체크 캘린더</h3>
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="text-lg font-semibold text-neutral-900 sm:text-xl">출석 체크 캘린더</h3>
+          <span className="shrink-0 text-xs font-medium text-neutral-500 sm:text-sm">
+            {calendar.year}년 {calendar.month}월
+          </span>
+        </div>
       </div>
 
       <div className="mt-4 overflow-hidden rounded-lg sm:mt-5 sm:rounded-xl">
@@ -115,12 +84,12 @@ export function AttendanceCalendarCard({ dashboard, onPhotoSelect }: AttendanceC
               );
             }
 
-            const isAttended = attendedDays.has(cell.day);
+            const day = days.get(cell.day);
+            const isAttended = day?.attended === true;
             const isStreak = streakVisualDays.has(cell.day);
-            const event = eventForDay(dashboard.workoutEvents, cell.day);
-            const memo = event?.title?.trim() ?? "";
-            const photoUrl = event?.imageUrl?.trim() ?? "";
-            const photoDate = event?.checkedInAt ? formatKstMonthDay(event.checkedInAt) : `${month}월 ${cell.day}일`;
+            const memo = day?.title.trim() ?? "";
+            const photoUrl = day?.imageUrl.trim() ?? "";
+            const photoDate = formatMonthDay(calendar.month, cell.day);
 
             return (
               <div

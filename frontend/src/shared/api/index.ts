@@ -2,6 +2,11 @@ export { api } from "./client";
 export { ApiError, isApiError } from "./errors";
 export type { ApiErrorOptions, ApiFieldErrors } from "./errors";
 export {
+  attendanceCalendarDaySchema,
+  attendanceCalendarSchema,
+  attendanceDaySchema,
+  attendanceDaysSchema,
+  calendarRequestSchema,
   checkOutPayloadSchema,
   csrfSchema,
   dashboardSchema,
@@ -22,6 +27,11 @@ export {
   workoutSchema,
 } from "./schemas";
 export type {
+  AttendanceCalendarDayDto,
+  AttendanceCalendarDto,
+  AttendanceDayDto,
+  AttendanceDaysDto,
+  CalendarRequest,
   CheckOutPayload,
   Dashboard,
   DashboardDto,
