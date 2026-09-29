@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo, Skeleton } from "@/shared/ui";
 import { QueryBoundary } from "@/shared/query";
 
@@ -15,6 +16,9 @@ function NavigationSkeleton() {
 }
 
 export function Chrome() {
+  const pathname = usePathname();
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return null;
+
   return (
     <nav
       aria-label="주 메뉴"
