@@ -104,7 +104,7 @@ function upstreamUrl(request: NextRequest, params: RouteParams) {
   return url;
 }
 
-function forwardedHeaders(request: NextRequest) {
+function forwardedHeaders(request: NextRequest, requestId: string) {
   const headers = new Headers();
   const connectionHeaders = new Set(
     (request.headers.get("connection") ?? "")
@@ -122,6 +122,8 @@ function forwardedHeaders(request: NextRequest) {
   }
 
   headers.set("Cache-Control", "no-store");
+  // Always issue a fresh ID; a client-supplied one is not trusted for log correlation.
+  headers.set("X-Request-Id", requestId);
 
   return headers;
 }
@@ -250,9 +252,10 @@ export async function proxyRequest(
     throw error;
   }
 
+  const requestId = crypto.randomUUID();
   const init: RequestInit = {
     method: request.method,
-    headers: forwardedHeaders(request),
+    headers: forwardedHeaders(request, requestId),
     redirect: "manual",
     signal: request.signal,
   };
@@ -271,10 +274,22 @@ export async function proxyRequest(
     if (error instanceof DOMException && error.name === "AbortError")
       throw error;
 
-    return json(503, {
-      success: false,
-      message: "Spring API에 연결할 수 없습니다.",
-    });
+    // Spring never saw this request, so this line in the platform log is the only trace.
+    console.error(
+      `[proxy] ${request.method} ${url.pathname} -> Spring unreachable (requestId=${requestId})`,
+      error,
+    );
+    return Response.json(
+      {
+        success: false,
+        message: "Spring API에 연결할 수 없습니다.",
+        requestId,
+      },
+      {
+        status: 503,
+        headers: { "Cache-Control": "no-store", "X-Request-Id": requestId },
+      },
+    );
   }
 
   return new Response(upstream.body, {

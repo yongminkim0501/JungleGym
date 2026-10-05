@@ -6,6 +6,7 @@ export type ApiErrorOptions = {
   code?: string;
   fieldErrors?: ApiFieldErrors;
   timestamp?: string;
+  requestId?: string;
   cause?: unknown;
 };
 
@@ -14,9 +15,15 @@ export class ApiError extends Error {
   readonly code?: string;
   readonly fieldErrors?: ApiFieldErrors;
   readonly timestamp?: string;
+  readonly requestId?: string;
 
   constructor(options: ApiErrorOptions) {
-    super(options.message);
+    // Server failures show a short request ID so a user report can be matched to the server log.
+    super(
+      options.requestId && options.status >= 500
+        ? `${options.message} (요청 ID: ${options.requestId.slice(0, 8)})`
+        : options.message,
+    );
     this.name = "ApiError";
     this.status = options.status;
 
@@ -24,6 +31,7 @@ export class ApiError extends Error {
     if (options.fieldErrors !== undefined)
       this.fieldErrors = options.fieldErrors;
     if (options.timestamp !== undefined) this.timestamp = options.timestamp;
+    if (options.requestId !== undefined) this.requestId = options.requestId;
     if (options.cause !== undefined) this.cause = options.cause;
   }
 }

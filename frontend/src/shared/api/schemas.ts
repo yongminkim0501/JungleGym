@@ -20,6 +20,7 @@ export const wireErrorSchema = z.object({
   message: z.string(),
   fieldErrors: z.record(z.string(), z.string()).optional(),
   timestamp: z.string().optional(),
+  requestId: z.string().optional(),
 });
 
 export function wireSuccessSchema<T extends z.ZodTypeAny>(dataSchema: T) {

@@ -61,6 +61,7 @@ function isJsonResponse(response: Response) {
 }
 
 async function readError(response: Response): Promise<ApiError> {
+  const requestId = response.headers.get("x-request-id") ?? undefined;
   if (isJsonResponse(response)) {
     const raw = await response.json().catch(() => null);
     const wireError = wireErrorSchema.safeParse(raw);
@@ -78,6 +79,7 @@ async function readError(response: Response): Promise<ApiError> {
       return new ApiError({
         status: response.status,
         message: raw.message,
+        ...(requestId && { requestId }),
       });
     }
   }
@@ -87,6 +89,7 @@ async function readError(response: Response): Promise<ApiError> {
   return new ApiError({
     status: response.status,
     message: statusMessage(response.status),
+    ...(requestId && { requestId }),
   });
 }
 
@@ -107,6 +110,9 @@ function apiErrorFromWire(
   }
   if (wireError.timestamp !== undefined) {
     Object.assign(options, { timestamp: wireError.timestamp });
+  }
+  if (wireError.requestId !== undefined) {
+    Object.assign(options, { requestId: wireError.requestId });
   }
 
   return new ApiError(options);

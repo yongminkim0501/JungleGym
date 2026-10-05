@@ -18,8 +18,10 @@ async function request<T>(path: string, schema: z.ZodType<T>, method = "GET", bo
     });
   } catch { throw new ApiError({ status: 503, message: "관리자 서버에 연결할 수 없습니다. 다시 시도해 주세요." }); }
   const result = await response.json().catch(() => null);
+  const requestId = typeof result?.requestId === "string" ? result.requestId : response.headers.get("x-request-id");
   if (!response.ok) throw new ApiError({ status: response.status,
-    message: typeof result?.message === "string" ? result.message : "요청 처리에 실패했습니다." });
+    message: typeof result?.message === "string" ? result.message : "요청 처리에 실패했습니다.",
+    ...(requestId && { requestId }) });
   return z.object({ success: z.literal(true), data: schema }).parse(result).data;
 }
 

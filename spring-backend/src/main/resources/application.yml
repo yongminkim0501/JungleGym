@@ -68,3 +68,8 @@ management:
       # Client-side p95 over a rolling window, shown on the admin system page.
       percentiles:
         http.server.requests: 0.95
+
+logging:
+  pattern:
+    # Every line carries the request ID returned in the X-Request-Id header and error bodies.
+    level: "%5p [%X{requestId:-}]"
