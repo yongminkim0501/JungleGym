@@ -50,5 +50,8 @@ flask_session/
 .DS_Store
 .idea/
 
+# ── Java ────────────────────────────────────
+target/
+
 # ── Node ────────────────────────────────────
 node_modules/
