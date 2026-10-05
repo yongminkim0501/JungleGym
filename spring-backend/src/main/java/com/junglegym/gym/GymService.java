@@ -22,6 +22,8 @@ public class GymService {
     public GymDtos.VisitResponse checkIn(Long userId) {
         User lockedUser = users.findLockedById(userId)
                 .orElseThrow(() -> new BusinessException("USER_NOT_FOUND", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+        if (lockedUser.isSuspended())
+            throw new BusinessException("USER_SUSPENDED", "이용이 정지된 계정입니다.", HttpStatus.FORBIDDEN);
         if (visits.existsByUserIdAndCheckedOutAtIsNull(userId))
             throw new BusinessException("ALREADY_CHECKED_IN", "이미 입실한 상태입니다.", HttpStatus.CONFLICT);
         return GymDtos.VisitResponse.from(visits.saveAndFlush(new GymVisit(lockedUser)));

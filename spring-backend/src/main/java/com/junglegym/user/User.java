@@ -16,6 +16,10 @@ public class User {
     @Column(name = "password_hash", nullable = false) private String passwordHash;
     @Column(name = "profile_image_url", length = 2048) private String profileImageUrl;
     @Column(name = "created_at", nullable = false) private Instant createdAt;
+    @Column(nullable = false) private boolean suspended;
+    @Column(name = "admin_note", nullable = false, length = 500) private String adminNote = "";
+    @Column(name = "admin_revision", nullable = false) private long adminRevision;
+    @Column(name = "security_version", nullable = false) private long securityVersion;
 
     protected User() {}
 
@@ -36,4 +40,18 @@ public class User {
     public String getPasswordHash() { return passwordHash; }
     public String getProfileImageUrl() { return profileImageUrl; }
     public void changePassword(String passwordHash) { this.passwordHash = passwordHash; }
+    public Instant getCreatedAt() { return createdAt; }
+    public boolean isSuspended() { return suspended; }
+    public String getAdminNote() { return adminNote; }
+    public long getAdminRevision() { return adminRevision; }
+    public long getSecurityVersion() { return securityVersion; }
+    public void updateByAdmin(String name, String nickname, String email, String note, boolean suspended) {
+        if (this.suspended != suspended) securityVersion++;
+        this.name = name;
+        this.nickname = nickname;
+        this.email = email;
+        this.adminNote = note;
+        this.suspended = suspended;
+        adminRevision++;
+    }
 }

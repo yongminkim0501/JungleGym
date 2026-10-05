@@ -12,12 +12,11 @@ import {
   eventLabels,
   formatDate,
   isInside,
-  sampleDay,
+  type AdminData,
   type Activity,
   type EventType,
   type Member,
 } from "./model";
-import { useAdminData } from "./store";
 import styles from "./admin-console.module.css";
 
 type View = "overview" | "users" | "logs";
@@ -80,8 +79,19 @@ function Pagination({
   );
 }
 
-export function AdminConsole() {
-  const { data, notice } = useAdminData();
+export function AdminConsole({
+  adminName,
+  logoutAction,
+  data, onRefresh, refreshing, onSaved,
+}: {
+  adminName: string;
+  logoutAction: () => Promise<void>;
+  data: AdminData;
+  onRefresh: () => void;
+  refreshing: boolean;
+  onSaved: () => Promise<void>;
+}) {
+  const today = dateKey(data.generatedAt);
   const [view, setView] = useState<View>("overview");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<Status>("all");
@@ -138,21 +148,20 @@ export function AdminConsole() {
   const total = view === "users" ? filteredUsers.length : filteredEvents.length;
   const safePage = Math.min(page, Math.max(1, Math.ceil(total / pageSize)));
   const start = (safePage - 1) * pageSize;
-  const sampleEvents = events.filter(
-    (event) => dateKey(event.at) === sampleDay,
+  const todayEvents = events.filter(
+    (event) => dateKey(event.at) === today,
   );
   const attendance = new Set(
-    sampleEvents
+    todayEvents
       .filter((event) => event.type === "checkin" && event.result === "success")
       .map((event) => event.userId),
   ).size;
   const inside = users.filter((user) => isInside(user.id, events)).length;
   const suspended = users.filter((user) => user.status === "suspended").length;
-  const failures = sampleEvents.filter(
-    (event) => event.result === "failed",
-  ).length;
   const week = Array.from({ length: 7 }, (_, index) => {
-    const day = `2026-09-${23 + index}`;
+    const date = new Date(`${today}T12:00:00+09:00`);
+    date.setUTCDate(date.getUTCDate() - (6 - index));
+    const day = dateKey(date.toISOString());
     return {
       day,
       count: new Set(
@@ -183,13 +192,13 @@ export function AdminConsole() {
   }
   function exportRows() {
     if (view === "users") {
-      downloadCsv("junglegym-demo-users.csv", [
+      downloadCsv("junglegym-users.csv", [
         [
           "사용자 ID",
           "이름",
           "닉네임",
           "이메일",
-          "기수",
+          "정글 번호",
           "상태",
           "가입일",
           "관리 메모",
@@ -206,7 +215,7 @@ export function AdminConsole() {
         ]),
       ]);
     } else {
-      downloadCsv("junglegym-demo-logs.csv", [
+      downloadCsv("junglegym-logs.csv", [
         [
           "로그 ID",
           "발생 시각 (KST)",
@@ -224,7 +233,7 @@ export function AdminConsole() {
           memberMap.get(event.userId)?.name ?? "알 수 없음",
           eventLabels[event.type],
           event.result === "success" ? "성공" : "실패",
-          event.actor === "admin" ? "로컬 관리자" : "사용자",
+          event.actorName ?? (event.actor === "admin" ? "관리자" : "사용자"),
           event.detail,
         ]),
       ]);
@@ -243,7 +252,7 @@ export function AdminConsole() {
         <thead>
           <tr>
             <th scope="col">사용자</th>
-            <th scope="col">기수</th>
+            <th scope="col">정글 번호</th>
             <th scope="col">이용 상태</th>
             <th scope="col">입실 상태</th>
             <th scope="col">가입일</th>
@@ -323,7 +332,7 @@ export function AdminConsole() {
           <span className={styles.workspaceIcon}>J</span>
           <div>
             <strong>정글짐 워크스페이스</strong>
-            <small>로컬 미리보기</small>
+            <small>운영 관리자</small>
           </div>
           <span className={styles.localDot} />
         </div>
@@ -345,11 +354,11 @@ export function AdminConsole() {
         <div className={styles.sidebarBottom}>
           <div className={styles.localCard}>
             <Icon name="shield" />
-            <strong>로컬 데모 모드</strong>
+            <strong>관리자 작업 기록</strong>
             <p>
-              예시 데이터로 관리 기능을
+              회원 정보 변경 내역은
               <br />
-              자유롭게 살펴보세요.
+              서버에 기록됩니다.
             </p>
           </div>
           <Link href="/" className={styles.homeLink}>
@@ -358,8 +367,8 @@ export function AdminConsole() {
           <div className={styles.operator}>
             <span>AD</span>
             <div>
-              <strong>로컬 관리자</strong>
-              <small>관리자 미리보기</small>
+              <strong>{adminName}</strong>
+              <small>인증된 관리자</small>
             </div>
           </div>
         </div>
@@ -371,10 +380,11 @@ export function AdminConsole() {
             <span>/</span>
             <strong>{views.find((item) => item.id === view)?.title}</strong>
           </div>
-          <span className={styles.localPill}>
-            <i />
-            LOCAL ONLY
-          </span>
+          <form action={logoutAction} className={styles.sessionControls}>
+            <span>{adminName}</span>
+            <button type="button" disabled={refreshing} onClick={onRefresh}>{refreshing ? "조회 중…" : "새로고침"}</button>
+            <button type="submit">로그아웃</button>
+          </form>
         </header>
         <div className={styles.content}>
           <div className={styles.pageHeading}>
@@ -397,9 +407,9 @@ export function AdminConsole() {
             </div>
             {view === "overview" ? (
               <div className={styles.dateStamp}>
-                <span>예시 데이터 기준일</span>
+                <span>한국 시간 기준일</span>
                 <strong>
-                  2026년 9월 29일 <small>화요일</small>
+                  {formatDate(data.generatedAt)}
                 </strong>
               </div>
             ) : (
@@ -413,17 +423,6 @@ export function AdminConsole() {
               </button>
             )}
           </div>
-          <div className={styles.demoBanner}>
-            <span className={styles.demoBadge}>PREVIEW</span>
-            <p>예시 데이터입니다. 변경사항은 이 브라우저에만 저장됩니다.</p>
-            <span className={styles.bannerEnd}>실제 서비스 미연결</span>
-          </div>
-          {notice && (
-            <p role="alert" className={styles.formError}>
-              {notice}
-            </p>
-          )}
-
           {view === "overview" ? (
             <>
               <section className={styles.metrics} aria-label="운영 요약">
@@ -445,8 +444,8 @@ export function AdminConsole() {
                     action: () => {
                       navigate("logs");
                       setEventType("checkin");
-                      setFrom(sampleDay);
-                      setTo(sampleDay);
+                      setFrom(today);
+                      setTo(today);
                     },
                   },
                   {
@@ -493,7 +492,7 @@ export function AdminConsole() {
                       <h2>주간 출석 현황</h2>
                       <p>하루 한 번, 꾸준히 쌓이는 운동 습관</p>
                     </div>
-                    <span className={styles.period}>09.23 — 09.29</span>
+                    <span className={styles.period}>{week[0]?.day.slice(5)} — {today.slice(5)}</span>
                   </div>
                   <div className={styles.chartSummary}>
                     <strong>
@@ -504,7 +503,7 @@ export function AdminConsole() {
                   </div>
                   <div
                     className={styles.chart}
-                    aria-label="9월 23일부터 29일까지 일별 출석 인원"
+                    aria-label="최근 7일 일별 출석 인원"
                   >
                     {week.map((day, index) => (
                       <button
@@ -531,7 +530,7 @@ export function AdminConsole() {
                         <span>
                           {day.day.slice(5).replace("-", ".")}
                           <small>
-                            {["수", "목", "금", "토", "일", "월", "화"][index]}
+                            {new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", weekday: "short" }).format(new Date(`${day.day}T12:00:00+09:00`))}
                           </small>
                         </span>
                       </button>
@@ -594,14 +593,14 @@ export function AdminConsole() {
                     className={styles.reviewNotice}
                     onClick={() => {
                       navigate("logs");
-                      setResult("failed");
-                      setFrom(sampleDay);
-                      setTo(sampleDay);
+                      setResult("all");
+                      setFrom(today);
+                      setTo(today);
                     }}
                   >
                     <span>
                       <i />
-                      기준일 실패 로그 <strong>{failures}건</strong>
+                      기준일 활동 기록 <strong>{todayEvents.length}건</strong>
                     </span>
                     <Icon name="arrow" size={16} />
                   </button>
@@ -679,7 +678,7 @@ export function AdminConsole() {
                     value={search}
                     placeholder={
                       view === "users"
-                        ? "이름, 이메일, 닉네임 또는 기수 검색"
+                        ? "이름, 이메일, 닉네임 또는 정글 번호 검색"
                         : "사용자 또는 활동 내용 검색"
                     }
                     onChange={(event) => {
@@ -850,9 +849,7 @@ export function AdminConsole() {
                               </button>
                             </td>
                             <td className={styles.muted}>
-                              {event.actor === "admin"
-                                ? "로컬 관리자"
-                                : "사용자"}
+                              {event.actorName ?? (event.actor === "admin" ? "관리자" : "사용자")}
                             </td>
                           </tr>
                         ))}
@@ -898,7 +895,7 @@ export function AdminConsole() {
             <span>Jungle GYM Admin</span>
             <span>
               함께 만드는 건강한 운동 습관 <i />
-              로컬 미리보기
+              운영 관리자
             </span>
           </footer>
         </div>
@@ -906,6 +903,7 @@ export function AdminConsole() {
       {selected && (
         <MemberEditor
           key={selected.id}
+          onSaved={onSaved}
           member={selected}
           events={events}
           onClose={() => setSelected(null)}

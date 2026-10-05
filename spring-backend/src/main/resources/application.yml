@@ -38,6 +38,13 @@ spring:
       mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
 
 app:
+  admin:
+    token-1: ${ADMIN_TOKEN_1:}
+    token-2: ${ADMIN_TOKEN_2:}
+  gym:
+    auto-checkout:
+      enabled: ${AUTO_CHECKOUT_ENABLED:true}
+      grace-minutes: ${AUTO_CHECKOUT_GRACE_MINUTES:120}
   jwt-secret: ${JWT_SECRET:local-jwt-secret-change-this-to-at-least-32-bytes}
   cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME:bhrv5jri}

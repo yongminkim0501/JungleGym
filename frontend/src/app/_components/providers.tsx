@@ -14,10 +14,10 @@ export function Providers({ children }: { children: ReactNode }) {
     () =>
       new QueryClient({
         queryCache: new QueryCache({
-          onError: (error) => {
+          onError: (error, query) => {
             // A background request can lose authorization while its old data is cached.
             // A fresh document also discards every private query and transient draft.
-            if (error instanceof ApiError && error.status === 401)
+            if (error instanceof ApiError && error.status === 401 && query.queryKey[0] !== "admin")
               window.location.replace("/login");
           },
         }),

@@ -1,1 +1,2 @@
-export { AdminConsole } from "./admin-console";
+export { AdminWorkspace } from "./admin-workspace";
+export { adminApi } from "./api";

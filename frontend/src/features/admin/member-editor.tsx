@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { ApiError } from "@/shared/api";
 import { Button, Dialog } from "@/shared/ui";
 import { notify } from "@/shared/notifications";
 import {
@@ -10,29 +12,33 @@ import {
   type Activity,
   type Member,
 } from "./model";
-import { saveAdminData } from "./store";
+import { adminApi } from "./api";
 import styles from "./admin-console.module.css";
 
 export function MemberEditor({
+  onSaved,
   member,
   events,
   onClose,
   onLogs,
 }: {
+  onSaved: () => Promise<void>;
   member: Member;
   events: Activity[];
   onClose: () => void;
   onLogs: () => void;
 }) {
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState(member);
   const [error, setError] = useState("");
   const history = events.filter((event) => event.userId === member.id);
-  function save(event: FormEvent<HTMLFormElement>) {
+  async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const parsed = memberSchema.safeParse(draft);
     if (!parsed.success) {
       setError(
-        "이름(1~50자), 닉네임(1~25자), 이메일 형식과 메모(500자 이내)를 확인해 주세요.",
+        "이름(1~50자), 닉네임(4~25자), 이메일 형식과 메모(500자 이내)를 확인해 주세요.",
       );
       return;
     }
@@ -40,74 +46,25 @@ export function MemberEditor({
       setError("이용 상태를 변경하는 사유를 관리 메모에 입력해 주세요.");
       return;
     }
+    setSaving(true);
     try {
-      saveAdminData((current) => {
-        const previous = current.users.find((user) => user.id === member.id);
-        if (!previous || JSON.stringify(previous) !== JSON.stringify(member))
-          throw new Error(
-            "이 사용자의 정보가 다른 창에서 변경됐습니다. 창을 닫고 다시 열어 주세요.",
-          );
-        const next = parsed.data;
-        if (
-          current.users.some(
-            (user) =>
-              user.id !== member.id &&
-              (user.nickname.toLowerCase() === next.nickname.toLowerCase() ||
-                user.email.toLowerCase() === next.email.toLowerCase()),
-          )
-        )
-          throw new Error("다른 사용자가 사용 중인 닉네임 또는 이메일입니다.");
-        const fields = (
-          ["name", "nickname", "email", "status", "note"] as const
-        ).filter((key) => previous[key] !== next[key]);
-        if (!fields.length) return current;
-        const labels = {
-          name: "이름",
-          nickname: "닉네임",
-          email: "이메일",
-          status: "이용 상태",
-          note: "관리 메모",
-        };
-        const log: Activity = {
-          id: crypto.randomUUID(),
-          userId: member.id,
-          at: new Date().toISOString(),
-          result: "success",
-          actor: "admin",
-          type:
-            next.status !== previous.status
-              ? next.status === "suspended"
-                ? "suspend"
-                : "restore"
-              : "update",
-          detail: `${fields.map((field) => labels[field]).join(", ")} 변경${next.status !== previous.status ? ` · 사유: ${next.note}` : ""}`,
-        };
-        return {
-          ...current,
-          users: current.users.map((user) =>
-            user.id === member.id ? next : user,
-          ),
-          events: [log, ...current.events].sort((a, b) =>
-            b.at.localeCompare(a.at),
-          ),
-        };
-      });
-      notify.success("사용자 정보를 로컬에 저장했습니다.");
+      await adminApi.update(parsed.data);
+      notify.success("회원 정보를 저장했습니다.");
       onClose();
+      await onSaved();
     } catch (cause) {
-      setError(
-        cause instanceof Error &&
-          !["QuotaExceededError", "SecurityError"].includes(cause.name)
-          ? cause.message
-          : "브라우저에 저장하지 못했습니다. 저장 공간과 브라우저 설정을 확인해 주세요.",
-      );
-    }
+      if (cause instanceof ApiError && cause.status === 401) {
+        router.replace("/admin/login"); router.refresh();
+      }
+      setError(cause instanceof Error ? cause.message : "저장에 실패했습니다.");
+    } finally { setSaving(false); }
   }
+
   return (
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open && !saving) onClose();
       }}
       title="사용자 상세"
       description={`${member.id} · ${member.jungleNumber} · ${formatDate(member.joinedAt)} 가입`}
@@ -122,7 +79,7 @@ export function MemberEditor({
             <strong>{member.name}</strong>
             <p>{member.email}</p>
           </div>
-          <span className={styles.demoBadge}>예시 사용자</span>
+          <span className={styles.demoBadge}>등록 회원</span>
         </div>
         <div className={styles.formGrid}>
           <label>
@@ -211,10 +168,10 @@ export function MemberEditor({
         )}
         <div className={styles.editorFooter}>
           <p>변경 내역은 관리자 활동 로그에 남습니다.</p>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} disabled={saving}>
             취소
           </Button>
-          <Button type="submit">변경사항 저장</Button>
+          <Button type="submit" disabled={saving}>{saving ? "저장 중…" : "변경사항 저장"}</Button>
         </div>
       </form>
     </Dialog>

@@ -6,6 +6,8 @@ export type AccessHistoryRow = {
   key: string;
   kind: "check-in" | "check-out";
   at: string;
+  autoCheckedOut: boolean;
+  durationMinutes: number | null;
 };
 
 export function accessHistoryRows(visits: Visit[]): AccessHistoryRow[] {
@@ -16,6 +18,8 @@ export function accessHistoryRows(visits: Visit[]): AccessHistoryRow[] {
           key: `${visit.id}-in`,
           kind: "check-in" as const,
           at: visit.checkedInAt,
+          autoCheckedOut: false,
+          durationMinutes: null,
         },
       ];
     }
@@ -25,11 +29,25 @@ export function accessHistoryRows(visits: Visit[]): AccessHistoryRow[] {
         key: `${visit.id}-out`,
         kind: "check-out" as const,
         at: visit.checkedOutAt,
+        autoCheckedOut: visit.autoCheckedOut,
+        durationMinutes: visit.autoCheckedOut
+          ? 59
+          : (visit.durationMinutes ??
+            Math.max(
+              0,
+              Math.floor(
+                (Date.parse(visit.checkedOutAt) -
+                  Date.parse(visit.checkedInAt)) /
+                  60_000,
+              ),
+            )),
       },
       {
         key: `${visit.id}-in`,
         kind: "check-in" as const,
         at: visit.checkedInAt,
+        autoCheckedOut: false,
+        durationMinutes: null,
       },
     ];
   });

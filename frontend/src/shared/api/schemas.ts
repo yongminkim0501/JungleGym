@@ -49,6 +49,9 @@ export const visitSchema = z.object({
   checkedOutAt: z.string().nullable(),
   title: z.string(),
   imageUrl: z.string().nullable(),
+  // Defaults allow the frontend to be deployed before the new backend.
+  autoCheckedOut: z.boolean().default(false),
+  durationMinutes: z.number().int().nonnegative().nullable().optional(),
 });
 
 export const historySchema = z.object({

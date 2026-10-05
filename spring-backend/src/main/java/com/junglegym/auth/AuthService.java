@@ -45,6 +45,7 @@ public class AuthService {
         User user = users.findByEmail(normalizeEmail(request.email()))
                 .orElseThrow(() -> invalidCredentials());
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) throw invalidCredentials();
+        if (user.isSuspended()) throw new BusinessException("USER_SUSPENDED", "이용이 정지된 계정입니다.", HttpStatus.FORBIDDEN);
         return new LoginResult(AuthDtos.UserResponse.from(user), tokens.issue(user.getId()));
     }
 
@@ -54,7 +55,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public Optional<AuthenticatedUser> findPrincipal(Long userId) {
-        return users.findById(userId).map(AuthenticatedUser::from);
+        return users.findById(userId).filter(user -> !user.isSuspended()).map(AuthenticatedUser::from);
     }
 
     public record LoginResult(AuthDtos.UserResponse user, TokenPair tokens) {}

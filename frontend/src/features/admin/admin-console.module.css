@@ -224,6 +224,21 @@
   border-radius: 5px;
   letter-spacing: 0.06em;
 }
+.sessionControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.sessionControls button {
+  border: 1px solid #dcece2;
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #39734f;
+  cursor: pointer;
+}
+.sessionControls button:hover { background: #f0f7f2; }
 .content {
   max-width: 1520px;
   margin: 0 auto;
@@ -1191,6 +1206,13 @@
   .topbar > div {
     font-size: 10px;
     gap: 9px;
+  }
+  .topbar > div > span {
+    display: none;
+  }
+  .sessionControls {
+    font-size: 10px;
+    gap: 8px;
   }
   .localPill {
     font-size: 8px;

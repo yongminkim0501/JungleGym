@@ -41,6 +41,11 @@ const allowedRoutes = [
   { method: "POST", path: "/api/gym/check-out" },
   { method: "GET", path: "/api/gym/visits" },
   { method: "GET", path: "/api/dashboard" },
+  { method: "GET", path: "/api/admin/auth/csrf" },
+  { method: "POST", path: "/api/admin/auth/login" },
+  { method: "POST", path: "/api/admin/auth/logout" },
+  { method: "GET", path: "/api/admin/auth/me" },
+  { method: "GET", path: "/api/admin/data" },
 ] as const;
 
 type RouteParams = {
@@ -56,7 +61,7 @@ class PayloadTooLargeError extends Error {
   }
 }
 
-function backendOrigin() {
+export function backendOrigin() {
   const rawOrigin = process.env.SPRING_API_ORIGIN;
   if (!rawOrigin) return null;
 
@@ -79,6 +84,7 @@ function apiPath(path: string[] | undefined) {
 }
 
 function isAllowed(method: string, path: string) {
+  if (method === "PATCH" && /^\/api\/admin\/users\/[1-9]\d*$/.test(path)) return true;
   return allowedRoutes.some(
     (route) => route.method === method && route.path === path,
   );

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { AdminConsole } from "@/features/admin";
+import { redirect } from "next/navigation";
+import { AdminWorkspace } from "@/features/admin";
+import { getAdminSession } from "./auth";
 
 export const metadata: Metadata = {
   title: "관리자",
   robots: { index: false, follow: false },
 };
 
-export default function AdminPage() {
-  // This local prototype has no production administrator authorization.
-  if (process.env.NODE_ENV !== "development") notFound();
-  return <AdminConsole />;
+export default async function AdminPage() {
+  const admin = await getAdminSession();
+  if (!admin) redirect("/admin/login");
+  return <AdminWorkspace adminName={admin.name} />;
 }

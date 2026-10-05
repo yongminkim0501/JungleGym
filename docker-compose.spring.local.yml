@@ -1,0 +1,54 @@
+# Local Spring development only. Frontend runs separately on localhost:3100.
+# docker compose --env-file spring-backend/.env.local -f docker-compose.spring.local.yml up -d --build
+services:
+  api:
+    build: ./spring-backend
+    ports:
+      - "127.0.0.1:18105:8080"
+    env_file: ./spring-backend/.env.local
+    environment:
+      SPRING_PROFILES_ACTIVE: mariadb
+      DB_URL: jdbc:mariadb://db:3306/jungle_gym
+      REDIS_HOST: redis
+      SMTP_HOST: mail
+      SMTP_PORT: 1025
+      COOKIE_SECURE: "false"
+      FRONTEND_ORIGIN: http://127.0.0.1:3100
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mail:
+        condition: service_started
+  db:
+    image: mariadb:11.8
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in spring-backend/.env.local}
+      MARIADB_DATABASE: jungle_gym
+      MARIADB_USER: ${DB_USERNAME:-jungle}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in spring-backend/.env.local}
+    volumes:
+      - spring_local_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - spring_local_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  mail:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:18025:8025"
+volumes:
+  spring_local_db:
+  spring_local_redis:

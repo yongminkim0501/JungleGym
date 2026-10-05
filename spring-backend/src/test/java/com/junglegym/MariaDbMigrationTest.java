@@ -19,7 +19,7 @@ class MariaDbMigrationTest {
     @Test
     void migrationRunsAndDatabaseRejectsDuplicateActiveVisit() throws Exception {
         var result = Flyway.configure().dataSource(maria.getJdbcUrl(), maria.getUsername(), maria.getPassword())
-                .locations("classpath:db/migration").load().migrate();
+                .locations("classpath:db/migration").target("3").load().migrate();
         assertTrue(result.success);
 
         try (var connection = maria.createConnection(""); var statement = connection.createStatement()) {
@@ -34,6 +34,18 @@ class MariaDbMigrationTest {
             assertThrows(SQLException.class, () -> statement.executeUpdate(
                     "INSERT INTO gym_visits(user_id,active_user_id,checked_in_at,workout_title) " +
                             "VALUES (1,1,CURRENT_TIMESTAMP,'')"));
+        }
+
+        var upgrade = Flyway.configure().dataSource(maria.getJdbcUrl(), maria.getUsername(), maria.getPassword())
+                .locations("classpath:db/migration").load().migrate();
+        assertTrue(upgrade.success);
+        try (var connection = maria.createConnection(""); var statement = connection.createStatement();
+             var rows = statement.executeQuery("SELECT suspended, admin_note, admin_revision, security_version FROM users WHERE id=1")) {
+            assertTrue(rows.next());
+            org.junit.jupiter.api.Assertions.assertFalse(rows.getBoolean("suspended"));
+            org.junit.jupiter.api.Assertions.assertEquals("", rows.getString("admin_note"));
+            org.junit.jupiter.api.Assertions.assertEquals(0L, rows.getLong("admin_revision"));
+            org.junit.jupiter.api.Assertions.assertEquals(0L, rows.getLong("security_version"));
         }
     }
 }

@@ -1,1 +1,1 @@
-export { proxyRequest } from "./proxy";
+export { proxyRequest, backendOrigin } from "./proxy";

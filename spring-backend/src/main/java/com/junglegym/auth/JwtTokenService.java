@@ -19,8 +19,10 @@ public class JwtTokenService {
     private static final Duration REFRESH_TTL = Duration.ofDays(30);
     private final SecretKey key;
     private final TokenRepository tokens;
+    private final com.junglegym.user.UserRepository users;
 
-    public JwtTokenService(TokenRepository tokens, @Value("${app.jwt-secret}") String secret) {
+    public JwtTokenService(TokenRepository tokens, com.junglegym.user.UserRepository users, @Value("${app.jwt-secret}") String secret) {
+        this.users = users;
         byte[] bytes = secret.getBytes(StandardCharsets.UTF_8);
         if (bytes.length < 32) {
             throw new IllegalArgumentException("app.jwt-secret must be at least 32 bytes");
@@ -43,6 +45,7 @@ public class JwtTokenService {
             if (tokens.isAccessDenied(claims.getId())) {
                 return null;
             }
+            if (!isCurrentUser(claims)) return null;
             return claims.getSubject() == null ? null
                     : new TokenAuthentication(Long.valueOf(claims.getSubject()), null);
         } catch (RuntimeException ignored) {
@@ -53,6 +56,7 @@ public class JwtTokenService {
         }
         try {
             Claims claims = parse(refresh, "refresh");
+            if (!isCurrentUser(claims)) return null;
             String userId = tokens.consumeRefresh(claims.getId());
             if (userId == null) {
                 return null;
@@ -90,7 +94,9 @@ public class JwtTokenService {
     }
 
     private String create(Long userId, String type, Duration ttl, String id) {
-        return Jwts.builder().subject(userId.toString()).claim("type", type).id(id)
+        var user = users.findById(userId).orElseThrow();
+        if (user.isSuspended()) throw new IllegalStateException("Account suspended");
+        return Jwts.builder().subject(userId.toString()).claim("type", type).claim("sv", user.getSecurityVersion()).id(id)
                 .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + ttl.toMillis()))
                 .signWith(key).compact();
     }
@@ -104,6 +110,13 @@ public class JwtTokenService {
             throw new JwtException("invalid token type");
         }
         return claims;
+    }
+
+    private boolean isCurrentUser(Claims claims) {
+        Number version = claims.get("sv", Number.class);
+        long issuedVersion = version == null ? 0 : version.longValue();
+        return users.findById(Long.valueOf(claims.getSubject()))
+                .filter(user -> !user.isSuspended() && user.getSecurityVersion() == issuedVersion).isPresent();
     }
 
     public record TokenAuthentication(Long userId, TokenPair refreshedTokens) {}
