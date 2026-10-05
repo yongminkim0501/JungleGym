@@ -10,7 +10,7 @@ public final class AuthDtos {
     public record RegisterRequest(
             @Email @NotBlank String email,
             @NotBlank @Size(max = 50) String jungleNumber,
-            @Size(min = 4, max = 25) String nickname,
+            @NotBlank @Size(min = 4, max = 25) String nickname,
             @NotBlank @Size(max = 50) String name,
             @NotNull @Size(min = 8, max = 72) @MaxUtf8Bytes(72) String password
     ) {

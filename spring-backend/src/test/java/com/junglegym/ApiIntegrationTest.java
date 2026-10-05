@@ -121,4 +121,17 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
     }
 
+    @Test
+    void registerWithoutNicknameIsRejectedAsInvalidInput() throws Exception {
+        for (String nickname : new String[] {"", ",\"nickname\":\"   \""}) {
+            mvc.perform(post("/api/auth/register")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"email\":\"nonick@example.com\",\"jungleNumber\":\"00777\",\"name\":\"닉없음\",\"password\":\"password123\"" + nickname + "}"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value("INVALID_REQUEST"))
+                    .andExpect(jsonPath("$.fieldErrors.nickname").exists());
+        }
+    }
+
 }
