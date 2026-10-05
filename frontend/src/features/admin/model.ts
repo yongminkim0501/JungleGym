@@ -36,9 +36,45 @@ export const dataSchema = z.object({
   users: z.array(memberSchema),
   events: z.array(eventSchema),
 });
+const endpointMetricSchema = z.object({
+  method: z.string(),
+  uri: z.string(),
+  count: z.number(),
+  meanMs: z.number().nullable(),
+  p95Ms: z.number().nullable(),
+  maxMs: z.number().nullable(),
+  clientErrors: z.number(),
+  serverErrors: z.number(),
+});
+const metricPointSchema = z.object({
+  at: z.iso.datetime(),
+  requests: z.number(),
+  clientErrors: z.number(),
+  serverErrors: z.number(),
+  meanMs: z.number().nullable(),
+  heapUsedMb: z.number(),
+  dbActive: z.number().nullable(),
+});
+export const metricsSchema = z.object({
+  generatedAt: z.iso.datetime(),
+  startedAt: z.iso.datetime(),
+  uptimeSeconds: z.number(),
+  jvm: z.object({ heapUsedMb: z.number(), heapMaxMb: z.number() }),
+  db: z.object({
+    active: z.number().nullable(),
+    idle: z.number().nullable(),
+    pending: z.number().nullable(),
+    max: z.number().nullable(),
+  }),
+  endpoints: z.array(endpointMetricSchema),
+  history: z.array(metricPointSchema),
+});
 export type Member = z.infer<typeof memberSchema>;
 export type Activity = z.infer<typeof eventSchema>;
 export type AdminData = z.infer<typeof dataSchema>;
+export type SystemMetrics = z.infer<typeof metricsSchema>;
+export type EndpointMetric = z.infer<typeof endpointMetricSchema>;
+export type MetricPoint = z.infer<typeof metricPointSchema>;
 
 export function dateKey(value: string) {
   return new Intl.DateTimeFormat("en-CA", {

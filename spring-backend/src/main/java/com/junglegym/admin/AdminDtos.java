@@ -31,4 +31,12 @@ public final class AdminDtos {
     public record Activity(String id, String userId, String type, Instant at,
             String result, String detail, String actor, String actorName) {}
     public record Data(int version, Instant generatedAt, List<Member> users, List<Activity> events) {}
+    public record Metrics(Instant generatedAt, Instant startedAt, long uptimeSeconds, Jvm jvm, Db db,
+            List<EndpointMetric> endpoints, List<MetricPoint> history) {}
+    public record Jvm(long heapUsedMb, long heapMaxMb) {}
+    public record Db(Integer active, Integer idle, Integer pending, Integer max) {}
+    public record EndpointMetric(String method, String uri, long count, Double meanMs, Double p95Ms,
+            Double maxMs, long clientErrors, long serverErrors) {}
+    public record MetricPoint(Instant at, long requests, long clientErrors, long serverErrors, Double meanMs,
+            long heapUsedMb, Integer dbActive) {}
 }

@@ -8,7 +8,8 @@ export type IconName =
   | "check"
   | "pulse"
   | "shield"
-  | "close";
+  | "close"
+  | "server";
 const paths: Record<IconName, string> = {
   overview: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
   users:
@@ -21,6 +22,7 @@ const paths: Record<IconName, string> = {
   pulse: "M2 12h5l3-8 4 16 3-8h5",
   shield: "M12 3l8 3v6c0 5-8 9-8 9s-8-4-8-9V6z M8 12l3 3 5-6",
   close: "M6 6l12 12 M6 18L18 6",
+  server: "M4 4h16v6H4z M4 14h16v6H4z M8 7h.01 M8 17h.01",
 };
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   return (

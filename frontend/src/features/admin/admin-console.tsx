@@ -6,6 +6,7 @@ import { Logo } from "@/shared/ui";
 import { notify } from "@/shared/notifications";
 import { Icon, type IconName } from "./icons";
 import { MemberEditor } from "./member-editor";
+import { SystemMetricsView } from "./system-metrics";
 import {
   dateKey,
   downloadCsv,
@@ -19,12 +20,13 @@ import {
 } from "./model";
 import styles from "./admin-console.module.css";
 
-type View = "overview" | "users" | "logs";
+type View = "overview" | "users" | "logs" | "system";
 type Status = "all" | "active" | "suspended" | "inside";
 const views: { id: View; title: string; icon: IconName }[] = [
   { id: "overview", title: "운영 현황", icon: "overview" },
   { id: "users", title: "사용자 관리", icon: "users" },
   { id: "logs", title: "활동 로그", icon: "logs" },
+  { id: "system", title: "시스템", icon: "server" },
 ];
 const pageSize = 8;
 
@@ -395,14 +397,18 @@ export function AdminConsole({
                   ? "한눈에 보는 정글짐"
                   : view === "users"
                     ? "사용자 관리"
-                    : "활동 로그"}
+                    : view === "logs"
+                      ? "활동 로그"
+                      : "시스템 상태"}
               </h1>
               <p>
                 {view === "overview"
                   ? "사용자와 운동 현황을 확인하고, 오늘의 운영을 시작하세요."
                   : view === "users"
                     ? "사용자 정보를 확인하고 계정의 이용 상태를 관리하세요."
-                    : "사용자 활동과 관리자 변경 내역을 시간순으로 확인하세요."}
+                    : view === "logs"
+                      ? "사용자 활동과 관리자 변경 내역을 시간순으로 확인하세요."
+                      : "API 응답 시간과 서버 자원 사용량을 확인하세요."}
               </p>
             </div>
             {view === "overview" ? (
@@ -412,7 +418,7 @@ export function AdminConsole({
                   {formatDate(data.generatedAt)}
                 </strong>
               </div>
-            ) : (
+            ) : view === "system" ? null : (
               <button
                 className={styles.outlineButton}
                 disabled={total === 0}
@@ -423,7 +429,9 @@ export function AdminConsole({
               </button>
             )}
           </div>
-          {view === "overview" ? (
+          {view === "system" ? (
+            <SystemMetricsView />
+          ) : view === "overview" ? (
             <>
               <section className={styles.metrics} aria-label="운영 요약">
                 {[

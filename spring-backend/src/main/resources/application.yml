@@ -63,3 +63,8 @@ management:
     health:
       probes:
         enabled: true
+  metrics:
+    distribution:
+      # Client-side p95 over a rolling window, shown on the admin system page.
+      percentiles:
+        http.server.requests: 0.95

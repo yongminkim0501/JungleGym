@@ -1,5 +1,6 @@
 package com.junglegym;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junglegym.admin.*;
 import com.junglegym.auth.JwtTokenService;
@@ -39,6 +40,7 @@ class AdminIntegrationTest {
     @Autowired JwtTokenService tokens;
     @Autowired StringRedisTemplate redis;
     @Autowired PasswordEncoder passwords;
+    @Autowired SystemMetricsService metrics;
     private User member;
 
     @BeforeEach void setup() {
@@ -174,5 +176,32 @@ class AdminIntegrationTest {
         mvc.perform(adminRequest(post("/api/admin/auth/login"))
                 .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(Map.of("token", SECOND))))
                 .andExpect(status().isTooManyRequests());
+    }
+
+    @Test void reportsRequestMetricsAndMinuteHistoryToAdminsOnly() throws Exception {
+        mvc.perform(get("/api/admin/metrics")).andExpect(status().isUnauthorized());
+        var userTokens = tokens.issue(member.getId());
+        mvc.perform(get("/api/admin/metrics").cookie(new Cookie("access_token", userTokens.accessToken())))
+                .andExpect(status().isUnauthorized());
+        Cookie admin = login(FIRST, 1);
+        metrics.sample();
+        for (int i = 0; i < 3; i++) mvc.perform(get("/api/admin/data").cookie(admin)).andExpect(status().isOk());
+        metrics.sample();
+        var body = json.readTree(mvc.perform(get("/api/admin/metrics").cookie(admin))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString()).get("data");
+
+        JsonNode data = null;
+        for (var endpoint : body.get("endpoints"))
+            if (endpoint.get("method").asText().equals("GET") && endpoint.get("uri").asText().equals("/api/admin/data")) data = endpoint;
+        assertNotNull(data, "Admin data route should be reported by its route template");
+        assertTrue(data.get("count").asLong() >= 3);
+        assertTrue(data.get("meanMs").isNumber());
+        assertTrue(data.get("p95Ms").isNumber());
+        assertTrue(body.get("jvm").get("heapUsedMb").asLong() > 0);
+        assertTrue(body.get("db").get("max").asInt() > 0);
+
+        var history = body.get("history");
+        assertEquals(2, history.size());
+        assertTrue(history.get(1).get("requests").asLong() >= 3, "Second sample should hold only the requests since the first");
     }
 }

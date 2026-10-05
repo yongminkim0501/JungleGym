@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ApiError } from "@/shared/api";
-import { dataSchema, memberSchema, type Member } from "./model";
+import { dataSchema, memberSchema, metricsSchema, type Member } from "./model";
 
 async function request<T>(path: string, schema: z.ZodType<T>, method = "GET", body?: unknown): Promise<T> {
   const headers = new Headers({ Accept: "application/json" });
@@ -27,6 +27,7 @@ export const adminApi = {
   login: (token: string) => request("/auth/login", z.object({ id: z.number(), name: z.string() }), "POST", { token }),
   logout: () => request("/auth/logout", z.null(), "POST"),
   data: () => request("/data", dataSchema),
+  metrics: () => request("/metrics", metricsSchema),
   update: (member: Member) => request(`/users/${member.id}`, memberSchema, "PATCH", {
     name: member.name, nickname: member.nickname, email: member.email,
     status: member.status, note: member.note, revision: member.revision,

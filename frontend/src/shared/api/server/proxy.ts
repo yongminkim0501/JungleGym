@@ -46,6 +46,7 @@ const allowedRoutes = [
   { method: "POST", path: "/api/admin/auth/logout" },
   { method: "GET", path: "/api/admin/auth/me" },
   { method: "GET", path: "/api/admin/data" },
+  { method: "GET", path: "/api/admin/metrics" },
 ] as const;
 
 type RouteParams = {
